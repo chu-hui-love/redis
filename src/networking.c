@@ -86,6 +86,10 @@ void linkClient(client *c) {
 client *createClient(int fd) {
     client *c = zmalloc(sizeof(client));
 
+
+	serverLog(LL_WARNING,"networking.c 90 createClient called fd=%d",fd);
+
+
     /* passing -1 as fd it is possible to create a non connected client.
      * This is useful since all the commands needs to be executed
      * in the context of a client. When commands are executed in other

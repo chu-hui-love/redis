@@ -1,4 +1,4 @@
-/* A simple event-driven programming library. Originally I wrote this code
+/* 一个简单的事件驱动编程库. Originally I wrote this code
  * for the Jim's event-loop (Jim is a Tcl interpreter) but later translated
  * it in form of a library for easy reuse.
  *
@@ -38,9 +38,9 @@
 #define AE_OK 0
 #define AE_ERR -1
 
-#define AE_NONE 0       /* No events registered. */
-#define AE_READABLE 1   /* Fire when descriptor is readable. */
-#define AE_WRITABLE 2   /* Fire when descriptor is writable. */
+#define AE_NONE 0       /* No events registered 没有事件注册. */
+#define AE_READABLE 1   /* 描述符可读时触发. */
+#define AE_WRITABLE 2   /* 描述符可写时触发. */
 #define AE_BARRIER 4    /* With WRITABLE, never fire the event if the
                            READABLE event already fired in the same event
                            loop iteration. Useful when you want to persist

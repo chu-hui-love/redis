@@ -1,4 +1,4 @@
-/* Configuration file parsing and CONFIG GET/SET commands implementation.
+/* 配置文件解析和配置GET/SET命令实现.
  *
  * Copyright (c) 2009-2012, Salvatore Sanfilippo <antirez at gmail dot com>
  * All rights reserved.
@@ -30,7 +30,7 @@
 
 #include "server.h"
 #include "cluster.h"
-
+#include <stdio.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 
@@ -170,6 +170,9 @@ void queueLoadModule(sds path, sds *argv, int argc) {
 }
 
 void loadServerConfigFromString(char *config) {
+
+	serverLog(LL_WARNING, "config.c 174 loadServerConfigFromString called config=%s",config);
+
     char *err = NULL;
     int linenum = 0, totlines, i;
     int slaveof_linenum = 0;
@@ -824,18 +827,17 @@ loaderr:
     exit(1);
 }
 
-/* Load the server configuration from the specified filename.
- * The function appends the additional configuration directives stored
- * in the 'options' string to the config file before loading.
+/* 从指定的文件名中加载服务配置.
+ *函数在加载之前将存储在"options"字符串中的附加配置指令附加到配置文件中.
  *
- * Both filename and options can be NULL, in such a case are considered
- * empty. This way loadServerConfig can be used to just load a file or
- * just load a string. */
+ * 文件名和选项都可以为NULL,在这种情况下被视为空. 
+ * 这样loadServerConfig可用于加载文件或只加载字符串. 
+ */
 void loadServerConfig(char *filename, char *options) {
     sds config = sdsempty();
     char buf[CONFIG_MAX_LINE+1];
 
-    /* Load the file content */
+    /* 加载文件内容 */
     if (filename) {
         FILE *fp;
 
@@ -852,7 +854,7 @@ void loadServerConfig(char *filename, char *options) {
             config = sdscat(config,buf);
         if (fp != stdin) fclose(fp);
     }
-    /* Append the additional options */
+    /* 追加额外的选项 */
     if (options) {
         config = sdscat(config,"\n");
         config = sdscat(config,options);

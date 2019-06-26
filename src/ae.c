@@ -1,4 +1,4 @@
-/* A simple event-driven programming library. Originally I wrote this code
+/* 一个简单的事件驱动编程库. Originally I wrote this code
  * for the Jim's event-loop (Jim is a Tcl interpreter) but later translated
  * it in form of a library for easy reuse.
  *

@@ -100,8 +100,8 @@ volatile unsigned long lru_clock; /* Server global current LRU time. */
  *
  * This is the meaning of the flags:
  *
- * w: write command (may modify the key space).
- * r: read command  (will never modify the key space).
+ * w: 写命令 (may modify the key space).
+ * r: 读命令  (will never modify the key space).
  * m: may increase memory usage once called. Don't allow if out of memory.
  * a: admin command, like SAVE or SHUTDOWN.
  * p: Pub/Sub related command.
@@ -1518,6 +1518,9 @@ void createSharedObjects(void) {
 
 void initServerConfig(void) {
     int j;
+
+
+
 
     pthread_mutex_init(&server.next_client_id_mutex,NULL);
     pthread_mutex_init(&server.lruclock_mutex,NULL);
@@ -4008,40 +4011,15 @@ int redisIsSupervised(int mode) {
 int main(int argc, char **argv) {
     struct timeval tv;
     int j;
-	serverLog(LL_NOTICE,"server.c 4011 start server... this is xcc print log....")
 
-#ifdef REDIS_TEST
-    if (argc == 3 && !strcasecmp(argv[1], "test")) {
-        if (!strcasecmp(argv[2], "ziplist")) {
-            return ziplistTest(argc, argv);
-        } else if (!strcasecmp(argv[2], "quicklist")) {
-            quicklistTest(argc, argv);
-        } else if (!strcasecmp(argv[2], "intset")) {
-            return intsetTest(argc, argv);
-        } else if (!strcasecmp(argv[2], "zipmap")) {
-            return zipmapTest(argc, argv);
-        } else if (!strcasecmp(argv[2], "sha1test")) {
-            return sha1Test(argc, argv);
-        } else if (!strcasecmp(argv[2], "util")) {
-            return utilTest(argc, argv);
-        } else if (!strcasecmp(argv[2], "endianconv")) {
-            return endianconvTest(argc, argv);
-        } else if (!strcasecmp(argv[2], "crc64")) {
-            return crc64Test(argc, argv);
-        } else if (!strcasecmp(argv[2], "zmalloc")) {
-            return zmalloc_test(argc, argv);
-        }
-
-        return -1; /* test not found */
-    }
-#endif
 
     /* We need to initialize our libraries, and the server configuration. */
 #ifdef INIT_SETPROCTITLE_REPLACEMENT
     spt_init(argc, argv);
 #endif
+
     setlocale(LC_COLLATE,"");
-    tzset(); /* Populates 'timezone' global. */
+    tzset(); /* 填充全局'timezone'. */
     zmalloc_set_oom_handler(redisOutOfMemoryHandler);
     srand(time(NULL)^getpid());
     gettimeofday(&tv,NULL);
@@ -4053,8 +4031,7 @@ int main(int argc, char **argv) {
     initServerConfig();
     moduleInitModulesSystem();
 
-    /* Store the executable path and arguments in a safe place in order
-     * to be able to restart the server later. */
+    /* 将可执行文件路径和参数存储在安全的位置,以便以后能够重新启动服务器. */
     server.executable = getAbsolutePath(argv[0]);
     server.exec_argv = zmalloc(sizeof(char*)*(argc+1));
     server.exec_argv[argc] = NULL;
@@ -4081,11 +4058,15 @@ int main(int argc, char **argv) {
         sds options = sdsempty();
         char *configfile = NULL;
 
-        /* Handle special options --help and --version */
+        /* 处理特殊的选项: --help and --version */
         if (strcmp(argv[1], "-v") == 0 ||
-            strcmp(argv[1], "--version") == 0) version();
+            strcmp(argv[1], "--version") == 0){
+            version();
+         }
         if (strcmp(argv[1], "--help") == 0 ||
-            strcmp(argv[1], "-h") == 0) usage();
+            strcmp(argv[1], "-h") == 0){
+				usage();
+			}
         if (strcmp(argv[1], "--test-memory") == 0) {
             if (argc == 3) {
                 memtest(atoi(argv[2]),50);
@@ -4097,21 +4078,19 @@ int main(int argc, char **argv) {
             }
         }
 
-        /* First argument is the config file name? */
+        /* 第一个参数是配置文件名? */
         if (argv[j][0] != '-' || argv[j][1] != '-') {
             configfile = argv[j];
             server.configfile = getAbsolutePath(configfile);
-            /* Replace the config file in server.exec_argv with
-             * its absolute path. */
+            /* 用其绝对路径替换server.exec_argv中的配置文件. */
             zfree(server.exec_argv[j]);
             server.exec_argv[j] = zstrdup(server.configfile);
             j++;
         }
 
-        /* All the other options are parsed and conceptually appended to the
-         * configuration file. For instance --port 6380 will generate the
-         * string "port 6380\n" to be parsed after the actual file name
-         * is parsed, if any. */
+        /* 所有其他选项都被解析并概念上附加到配置文件中.
+         * 例如,--port 6380将生成字符串"port 6380\n",以便在解析实际文件名(如果有的话)之后进行解析.
+         **/
         while(j != argc) {
             if (argv[j][0] == '-' && argv[j][1] == '-') {
                 /* Option name */
@@ -4156,6 +4135,9 @@ int main(int argc, char **argv) {
     } else {
         serverLog(LL_WARNING, "Configuration loaded");
     }
+
+
+
 
     server.supervised = redisIsSupervised(server.supervised_mode);
     int background = server.daemonize && !server.supervised;

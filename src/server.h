@@ -85,7 +85,7 @@ typedef long long mstime_t; /* millisecond time type. */
 #define MAX_CLIENTS_PER_CLOCK_TICK 200          /* HZ is adapted based on that. */
 #define CONFIG_DEFAULT_SERVER_PORT        6379  /* TCP port. */
 #define CONFIG_DEFAULT_TCP_BACKLOG       511    /* TCP listen backlog. */
-#define CONFIG_DEFAULT_CLIENT_TIMEOUT       0   /* Default client timeout: infinite */
+#define CONFIG_DEFAULT_CLIENT_TIMEOUT       0   /* 默认客户端超时:无穷大 */
 #define CONFIG_DEFAULT_DBNUM     16
 #define CONFIG_MAX_LINE    1024
 #define CRON_DBS_PER_CALL 16
@@ -226,7 +226,7 @@ typedef long long mstime_t; /* millisecond time type. */
 
 /* Client flags */
 #define CLIENT_SLAVE (1<<0)   /* 此客户端是从属服务器 */
-#define CLIENT_MASTER (1<<1)  /* This client is a master server */
+#define CLIENT_MASTER (1<<1)  /* 此客户端是主服务 */
 #define CLIENT_MONITOR (1<<2) /* This client is a slave monitor, see MONITOR */
 #define CLIENT_MULTI (1<<3)   /* This client is in a MULTI context */
 #define CLIENT_BLOCKED (1<<4) /* The client is waiting in a blocking operation */
@@ -930,9 +930,9 @@ struct clusterState;
 
 struct redisServer {
     /* General */
-    pid_t pid;                  /* Main process pid. */
-    char *configfile;           /* Absolute config file path, or NULL */
-    char *executable;           /* Absolute executable file path. */
+    pid_t pid;                  /* 主进程pid. */
+    char *configfile;           /* 绝对配置文件路径,可能为NULL */
+    char *executable;           /* 绝对可执行文件路径. */
     char **exec_argv;           /* Executable argv vector (copy). */
     int dynamic_hz;             /* Change hz value depending on # of clients. */
     int config_hz;              /* Configured HZ value. May be different than
@@ -952,7 +952,7 @@ struct redisServer {
     int arch_bits;              /* 32 or 64 depending on sizeof(long) */
     int cronloops;              /* Number of times the cron function run */
     char runid[CONFIG_RUN_ID_SIZE+1];  /* ID always different at every exec. */
-    int sentinel_mode;          /* True if this instance is a Sentinel. */
+    int sentinel_mode;          /* 如果此实例是Sentinel,则为True. */
     size_t initial_memory_usage; /* Bytes used after initialization. */
     int always_show_logo;       /* Show logo even for non-stdout logging. */
     /* Modules */
@@ -1123,7 +1123,7 @@ struct redisServer {
     /* Propagation of commands in AOF / replication */
     redisOpArray also_propagate;    /* Additional command to propagate. */
     /* Logging */
-    char *logfile;                  /* Path of log file */
+    char *logfile;                  /* 日志文件路径 */
     int syslog_enabled;             /* Is syslog enabled? */
     char *syslog_ident;             /* Syslog ident */
     int syslog_facility;            /* Syslog facility */

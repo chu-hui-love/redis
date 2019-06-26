@@ -1,4 +1,4 @@
-/* SDSLib 2.0 -- A C dynamic strings library
+/* SDSLib 2.0 --一个动态的字符串库
  *
  * Copyright (c) 2006-2015, Salvatore Sanfilippo <antirez at gmail dot com>
  * Copyright (c) 2015, Oran Agra
@@ -144,8 +144,7 @@ sds sdsnewlen(const void *init, size_t initlen) {
     return s;
 }
 
-/* Create an empty (zero length) sds string. Even in this case the string
- * always has an implicit null term. */
+/* 创建一个空的(长度为0)sds字符串.即使在这种情况下,字符串也总是有一个隐式的null项. */
 sds sdsempty(void) {
     return sdsnewlen("",0);
 }
@@ -161,7 +160,7 @@ sds sdsdup(const sds s) {
     return sdsnewlen(s, sdslen(s));
 }
 
-/* Free an sds string. No operation is performed if 's' is NULL. */
+/* 释放一个sds字符串. 如果's'为空,则不执行任何操作. */
 void sdsfree(sds s) {
     if (s == NULL) return;
     s_free((char*)s-sdsHdrSize(s[-1]));

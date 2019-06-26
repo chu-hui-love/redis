@@ -40,6 +40,7 @@
  * On error, NULL is returned. Otherwise the pointer to the new list. */
 list *listCreate(void)
 {
+
     struct list *list;
 
     if ((list = zmalloc(sizeof(*list))) == NULL)

@@ -617,13 +617,11 @@ void getRandomHexChars(char *p, size_t len) {
     for (j = 0; j < len; j++) p[j] = charset[p[j] & 0x0F];
 }
 
-/* Given the filename, return the absolute path as an SDS string, or NULL
- * if it fails for some reason. Note that "filename" may be an absolute path
- * already, this will be detected and handled correctly.
+/* 给定文件名,将绝对路径作为SDS字符串返回,如果由于某种原因失败则返回NULL.
+ * 请注意,"filename"可能已经是绝对路径,这将被正确检测和处理.
  *
- * The function does not try to normalize everything, but only the obvious
- * case of one or more "../" appearing at the start of "filename"
- * relative path. */
+ * 该函数不会尝试对所有内容进行规范化,而只是在"filename"相对路径的开头出现一个或多个"../"的明显情况.
+ */
 sds getAbsolutePath(char *filename) {
     char cwd[1024];
     sds abspath;
