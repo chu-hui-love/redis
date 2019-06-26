@@ -45,12 +45,12 @@ typedef struct listIter {
 } listIter;
 
 typedef struct list {
-    listNode *head;
-    listNode *tail;
+    listNode *head; /*头指针*/
+    listNode *tail; /*尾指针*/
     void *(*dup)(void *ptr);
-    void (*free)(void *ptr);
+    void (*free)(void *ptr); /*节点自己释放,类似于面向对象语言的多态*/
     int (*match)(void *ptr, void *key);
-    unsigned long len;
+    unsigned long len; /*链表的长度*/
 } list;
 
 /* 作为宏实现的函数 */

@@ -41,11 +41,10 @@
 #define AE_NONE 0       /* No events registered 没有事件注册. */
 #define AE_READABLE 1   /* 描述符可读时触发. */
 #define AE_WRITABLE 2   /* 描述符可写时触发. */
-#define AE_BARRIER 4    /* With WRITABLE, never fire the event if the
-                           READABLE event already fired in the same event
-                           loop iteration. Useful when you want to persist
-                           things to disk before sending replies, and want
-                           to do that in a group fashion. */
+#define AE_BARRIER 4    /* 对于WRITABLE,如果可读事件已经在同一个事件循环迭代中触发,
+							则永远不要触发该事件.
+                          当您希望在发送回复之前将内容保存到磁盘,
+                          并且希望以组的方式保存时,它非常有用. */
 
 #define AE_FILE_EVENTS 1
 #define AE_TIME_EVENTS 2
@@ -67,7 +66,7 @@ typedef int aeTimeProc(struct aeEventLoop *eventLoop, long long id, void *client
 typedef void aeEventFinalizerProc(struct aeEventLoop *eventLoop, void *clientData);
 typedef void aeBeforeSleepProc(struct aeEventLoop *eventLoop);
 
-/* File event structure */
+/* 文件消息结构 */
 typedef struct aeFileEvent {
     int mask; /* one of AE_(READABLE|WRITABLE|BARRIER) */
     aeFileProc *rfileProc;
@@ -75,11 +74,11 @@ typedef struct aeFileEvent {
     void *clientData;
 } aeFileEvent;
 
-/* Time event structure */
+/* 时间消息结构 */
 typedef struct aeTimeEvent {
-    long long id; /* time event identifier. */
-    long when_sec; /* seconds */
-    long when_ms; /* milliseconds */
+    long long id; /* 事件消息标识符. */
+    long when_sec; /* 秒 */
+    long when_ms; /* 毫秒 */
     aeTimeProc *timeProc;
     aeEventFinalizerProc *finalizerProc;
     void *clientData;
@@ -87,23 +86,23 @@ typedef struct aeTimeEvent {
     struct aeTimeEvent *next;
 } aeTimeEvent;
 
-/* A fired event */
+/* 触发事件 */
 typedef struct aeFiredEvent {
     int fd;
     int mask;
 } aeFiredEvent;
 
-/* State of an event based program */
+/* 基于事件的程序的状态 */
 typedef struct aeEventLoop {
-    int maxfd;   /* highest file descriptor currently registered */
-    int setsize; /* max number of file descriptors tracked */
+    int maxfd;   /* 当前注册的最高文件描述符 */
+    int setsize; /* 跟踪的文件描述符的最大数量 */
     long long timeEventNextId;
-    time_t lastTime;     /* Used to detect system clock skew */
-    aeFileEvent *events; /* Registered events */
-    aeFiredEvent *fired; /* Fired events */
+    time_t lastTime;     /* 用于检测系统时钟偏移 */
+    aeFileEvent *events; /* 注册事件 */
+    aeFiredEvent *fired; /* 触发事件 */
     aeTimeEvent *timeEventHead;
     int stop;
-    void *apidata; /* This is used for polling API specific data */
+    void *apidata; /* 这用于轮询特定于API的数据 */
     aeBeforeSleepProc *beforesleep;
     aeBeforeSleepProc *aftersleep;
 } aeEventLoop;

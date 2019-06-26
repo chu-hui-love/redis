@@ -60,69 +60,62 @@
 
 struct sharedObjectsStruct shared;
 
-/* Global vars that are actually used as constants. The following double
- * values are used for double on-disk serialization, and are initialized
- * at runtime to avoid strange compiler optimizations. */
+/* 实际用作常量的全局变量.
+ * 以下double值用于双磁盘序列化,
+ * 并在运行时初始化以避免奇怪的编译器优化.
+ * 2019年6月26日22:42:05 什么是双磁盘优化?  
+ */
 
 double R_Zero, R_PosInf, R_NegInf, R_Nan;
 
 /*================================= Globals ================================= */
 
 /* Global vars */
-struct redisServer server; /* Server global state */
-volatile unsigned long lru_clock; /* Server global current LRU time. */
+struct redisServer server; /* 服务器全局状态 */
+volatile unsigned long lru_clock; /* 服务器全局当前LRU时间. */
 
-/* Our command table.
+/* 命令表.
  *
- * Every entry is composed of the following fields:
+ * 每个条目都由以下字段组成:
  *
- * name: a string representing the command name.
- * function: pointer to the C function implementing the command.
- * arity: number of arguments, it is possible to use -N to say >= N
- * sflags: command flags as string. See below for a table of flags.
- * flags: flags as bitmask. Computed by Redis using the 'sflags' field.
- * get_keys_proc: an optional function to get key arguments from a command.
- *                This is only used when the following three fields are not
- *                enough to specify what arguments are keys.
- * first_key_index: first argument that is a key
- * last_key_index: last argument that is a key
- * key_step: step to get all the keys from first to last argument. For instance
- *           in MSET the step is two since arguments are key,val,key,val,...
- * microseconds: microseconds of total execution time for this command.
- * calls: total number of calls of this command.
+ * name: 表示命令名称的字符串.
+ * function: 指向实现该命令的C函数的指针.
+ * arity: 参数个数,可以使用-N来表示> = N.
+ * sflags: 命令标志为字符串.请参阅下面的标志表.
+ * flags: flags作为位掩码.由Redis使用'sflags'字段计算.
+ * get_keys_proc: 一个可选函数，用于从命令中获取关键参数.
+ *                仅当以下三个字段不足以指定哪些参数是key时才使用此选项.
+ * first_key_index: 第一个参数是key
+ * last_key_index: 最后一个参数是key
+ * key_step: 从第一个到最后一个参数获取所有key的步骤. 
+ 			 例如,在MSET中,步骤为2,因为参数是key,val,key,val...
+ * microseconds: 此命令的总执行时间的微秒.
+ * calls: 此命令的总调用次数.
  *
- * The flags, microseconds and calls fields are computed by Redis and should
- * always be set to zero.
+ * flags,microseconds和calls字段由Redis计算,并且应始终设置为零.
  *
- * Command flags are expressed using strings where every character represents
- * a flag. Later the populateCommandTable() function will take care of
- * populating the real 'flags' field using this characters.
+ * 命令标志使用字符串表示,其中每个字符表示一个标志.
  *
- * This is the meaning of the flags:
+ *
+ * 这是标志的含义:
  *
  * w: 写命令 (may modify the key space).
  * r: 读命令  (will never modify the key space).
- * m: may increase memory usage once called. Don't allow if out of memory.
- * a: admin command, like SAVE or SHUTDOWN.
- * p: Pub/Sub related command.
- * f: force replication of this command, regardless of server.dirty.
- * s: command not allowed in scripts.
- * R: random command. Command is not deterministic, that is, the same command
- *    with the same arguments, with the same key space, may have different
- *    results. For instance SPOP and RANDOMKEY are two random commands.
- * S: Sort command output array if called from script, so that the output
- *    is deterministic.
- * l: Allow command while loading the database.
+ * m: 一旦调用可能会增加内存使用量. 如果内存不足则不允许调用.
+ * a: admin命令，如SAVE或SHUTDOWN.
+ * p: Pub/Sub 相关命令.
+ * f: 强制复制此命令,而不考虑server.dirty.
+ * s: 脚本中不允许使用命令.
+ * R: 随机的命令.命令是不确定的,即同一个命令具有相同的参数,相同的键,可能会产生不同的结果.
+ 	  例如,SPOP和RANDOMKEY是两个随机命令
+ * S: 如果从脚本调用,则对命令输出数组进行排序,以使输出具有确定性.
+ * l: 在加载数据库时允许命令.
  * t: Allow command while a slave has stale data but is not allowed to
- *    server this data. Normally no command is accepted in this condition
- *    but just a few.
- * M: Do not automatically propagate the command on MONITOR.
- * k: Perform an implicit ASKING for this command, so the command will be
- *    accepted in cluster mode if the slot is marked as 'importing'.
- * F: Fast command: O(1) or O(log(N)) command that should never delay
- *    its execution as long as the kernel scheduler is giving us time.
- *    Note that commands that may trigger a DEL as a side effect (like SET)
- *    are not fast commands.
+ *    server this data. 通常情况下,在这种情况下不接受任何命令,只有少数命令.
+ * M: 不自动传播命令在MONITOR上.
+ * k: 为此命令执行隐式ASKING,因此如果插槽标记为'import',则该命令将在集群模式下被接受.
+ * F: 快速的命令: O(1)或O(log(N))命令,只要内核调度程序给我们时间,它就不会延迟执行.
+ *    请注意,可能触发DEL作为副作用的命令(如SET)不是快速命令.
  */
 struct redisCommand redisCommandTable[] = {
     {"module",moduleCommand,-2,"as",0,NULL,0,0,0,0,0},
@@ -2912,10 +2905,9 @@ void authCommand(client *c) {
     }
 }
 
-/* The PING command. It works in a different way if the client is in
- * in Pub/Sub mode. */
+/* The PING command. 如果客户端处于发布/订阅模式,它以不同的方式工作. */
 void pingCommand(client *c) {
-    /* The command takes zero or one arguments. */
+    /* 该命令采用零个或一个参数. */
     if (c->argc > 2) {
         addReplyErrorFormat(c,"wrong number of arguments for '%s' command",
             c->cmd->name);
@@ -4173,7 +4165,7 @@ int main(int argc, char **argv) {
         sentinelIsRunning();
     }
 
-    /* Warning the user about suspicious maxmemory setting. */
+    /* 警告用户可疑的maxmemory设置. */
     if (server.maxmemory > 0 && server.maxmemory < 1024*1024) {
         serverLog(LL_WARNING,"WARNING: You specified a maxmemory value that is less than 1MB (current value is %llu bytes). Are you sure this is what you really want?", server.maxmemory);
     }

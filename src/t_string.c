@@ -42,12 +42,11 @@ static int checkStringLength(client *c, long long size) {
     return C_OK;
 }
 
-/* The setGenericCommand() function implements the SET operation with different
- * options and variants. This function is called in order to implement the
- * following commands: SET, SETEX, PSETEX, SETNX.
+/* setGenericCommand()函数使用不同的选项和变量实现SET操作.
+ * 调用此函数是为了实现以下命令: SET, SETEX, PSETEX, SETNX.
  *
- * 'flags' changes the behavior of the command (NX or XX, see belove).
- *
+
+ * 'flags' 更改命令的行为(NX或XX,参见belove).
  * 'expire' represents an expire to set in form of a Redis object as passed
  * by the user. It is interpreted according to the specified 'unit'.
  *
@@ -94,6 +93,9 @@ void setGenericCommand(client *c, int flags, robj *key, robj *val, robj *expire,
 
 /* SET key value [NX] [XX] [EX <seconds>] [PX <milliseconds>] */
 void setCommand(client *c) {
+
+	serverLog(LL_WARNING, "t_string.c 98 set command called command=%s",c->cmd->name);
+
     int j;
     robj *expire = NULL;
     int unit = UNIT_SECONDS;

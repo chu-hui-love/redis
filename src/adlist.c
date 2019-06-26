@@ -33,11 +33,13 @@
 #include "adlist.h"
 #include "zmalloc.h"
 
-/* Create a new list. The created list can be freed with
- * AlFreeList(), but private value of every node need to be freed
- * by the user before to call AlFreeList().
- *
- * On error, NULL is returned. Otherwise the pointer to the new list. */
+/* 创建一个新的List.
+ * 创建的列表可以用AlFreeList()释放,
+ * 但是在调用AlFreeList()之前,
+ * 用户需要释放每个节点的私有值.
+ * 
+ * 出错时,返回NULL.否则指向新列表的指针.
+ */
 list *listCreate(void)
 {
 
@@ -45,6 +47,7 @@ list *listCreate(void)
 
     if ((list = zmalloc(sizeof(*list))) == NULL)
         return NULL;
+	
     list->head = list->tail = NULL;
     list->len = 0;
     list->dup = NULL;
@@ -53,7 +56,7 @@ list *listCreate(void)
     return list;
 }
 
-/* Remove all the elements from the list without destroying the list itself. */
+/* 在不破坏列表本身的情况下从列表中删除所有元素. */
 void listEmpty(list *list)
 {
     unsigned long len;
@@ -71,32 +74,36 @@ void listEmpty(list *list)
     list->len = 0;
 }
 
-/* Free the whole list.
+/* 销毁整个链表.和listEmpty不同的是.listEmpty还保留着头指针.
  *
- * This function can't fail. */
+ * 这个函数不能失败. */
 void listRelease(list *list)
 {
     listEmpty(list);
     zfree(list);
 }
 
-/* Add a new node to the list, to head, containing the specified 'value'
- * pointer as value.
+/* 将新节点添加到列表中,包含指定的'value'指针作为值.
  *
- * On error, NULL is returned and no operation is performed (i.e. the
- * list remains unaltered).
- * On success the 'list' pointer you pass to the function is returned. */
+ * 出错时,返回NULL并且不执行任何操作(即,链表保持不变).
+ * 成功时,返回传递给函数的'list'指针. */
 list *listAddNodeHead(list *list, void *value)
 {
     listNode *node;
 
+	/*
+	* 构造一个新的节点
+	*/
     if ((node = zmalloc(sizeof(*node))) == NULL)
         return NULL;
+	//为新节点赋值
     node->value = value;
+	
     if (list->len == 0) {
         list->head = list->tail = node;
         node->prev = node->next = NULL;
     } else {
+		// 新创建的节点作为head节点
         node->prev = NULL;
         node->next = list->head;
         list->head->prev = node;
@@ -240,7 +247,7 @@ listNode *listNext(listIter *iter)
     return current;
 }
 
-/* Duplicate the whole list. On out of memory NULL is returned.
+/* 复制整个列表. On out of memory NULL is returned.
  * On success a copy of the original list is returned.
  *
  * The 'Dup' method set with listSetDupMethod() function is used

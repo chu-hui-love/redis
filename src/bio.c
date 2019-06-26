@@ -1,31 +1,24 @@
-/* Background I/O service for Redis.
+/* Redis的后台I / O服务.
  *
- * This file implements operations that we need to perform in the background.
- * Currently there is only a single operation, that is a background close(2)
- * system call. This is needed as when the process is the last owner of a
- * reference to a file closing it means unlinking it, and the deletion of the
- * file is slow, blocking the server.
+ * 此文件实现了我们需要在后台执行的操作.
+ * 目前只有一个操作,那就是后台close(2)系统调用.
+ * 这是必要的,因为当进程是对文件引用的最后一个所有者时,
+ * 关闭它意味着断开对它的链接,而文件的删除很慢,而阻塞了服务器.
  *
- * In the future we'll either continue implementing new things we need or
- * we'll switch to libeio. However there are probably long term uses for this
- * file as we may want to put here Redis specific background tasks (for instance
- * it is not impossible that we'll need a non blocking FLUSHDB/FLUSHALL
- * implementation).
+ * 在未来,们要么继续实施我们需要的新东西,么我们将切换到libeio.
+ * 然而,件可能有长期的用途,
+ * 可能想把Redis特定的后台任务放在这里(或者,们需要一个非阻塞FLUSHDB/FLUSHALL实现也不是不可能的).
  *
- * DESIGN
+ *
+ * 设计
  * ------
  *
- * The design is trivial, we have a structure representing a job to perform
- * and a different thread and job queue for every job type.
- * Every thread waits for new jobs in its queue, and process every job
- * sequentially.
+ * 设计很简单,们有一个表示要执行的作业的结构,每个作业类型的不同线程和作业队列.
+ * 每个线程都在等待队列中的新作业,序处理每个作业.
  *
- * Jobs of the same type are guaranteed to be processed from the least
- * recently inserted to the most recently inserted (older jobs processed
- * first).
  *
- * Currently there is no way for the creator of the job to be notified about
- * the completion of the operation, this will only be added when/if needed.
+ * 同类型的作业保证从最近插入的最少的作业处理到最近插入的最近的作业(旧作业首先处理).
+ * 目前无法通知作业的创建者操作已经完成,在需要时才会添加.
  *
  * ----------------------------------------------------------------------------
  *

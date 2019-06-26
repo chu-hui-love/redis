@@ -51,11 +51,11 @@
 
 typedef long long mstime_t; /* millisecond time type. */
 
-#include "ae.h"      /* Event driven programming library */
-#include "sds.h"     /* Dynamic safe strings */
-#include "dict.h"    /* Hash tables */
-#include "adlist.h"  /* Linked lists */
-#include "zmalloc.h" /* total memory usage aware version of malloc/free */
+#include "ae.h"      /* 消息驱动编程库 */
+#include "sds.h"     /* 动态安全字符串*/
+#include "dict.h"    /* hash表 */
+#include "adlist.h"  /* 链表*/
+#include "zmalloc.h" /* 总内存使用感知版本的malloc/free */
 #include "anet.h"    /* Networking the easy way */
 #include "ziplist.h" /* Compact list data structure */
 #include "intset.h"  /* Compact integer set structure */
@@ -219,7 +219,7 @@ typedef long long mstime_t; /* millisecond time type. */
 #define CMD_MODULE_GETKEYS (1<<14)  /* Use the modules getkeys interface. */
 #define CMD_MODULE_NO_CLUSTER (1<<15) /* Deny on Redis Cluster. */
 
-/* AOF states */
+/* AOF 状态 */
 #define AOF_OFF 0             /* AOF is off */
 #define AOF_ON 1              /* AOF is on */
 #define AOF_WAIT_REWRITE 2    /* AOF waits rewrite to start appending */
@@ -605,8 +605,8 @@ typedef struct RedisModuleDigest {
 typedef struct redisObject {
     unsigned type:4;
     unsigned encoding:4;
-    unsigned lru:LRU_BITS; /* LRU time (relative to global lru_clock) or
-                            * LFU data (least significant 8 bits frequency
+    unsigned lru:LRU_BITS; /* LRU 时间 (relative to global lru_clock) or
+                            * LFU 数据 (least significant 8 bits frequency
                             * and most significant 16 bits access time). */
     int refcount;
     void *ptr;
@@ -723,8 +723,8 @@ typedef struct client {
                                replication stream that we are receiving from
                                the master. */
     size_t querybuf_peak;   /* Recent (100ms or more) peak of querybuf size. */
-    int argc;               /* Num of arguments of current command. */
-    robj **argv;            /* Arguments of current command. */
+    int argc;               /* 当前命令的参数数量. */
+    robj **argv;            /* 当前命令的参数. */
     struct redisCommand *cmd, *lastcmd;  /* Last command executed. */
     int reqtype;            /* Request protocol type: PROTO_REQ_* */
     int multibulklen;       /* Number of multi bulk arguments left to read. */
@@ -948,7 +948,7 @@ struct redisServer {
     int activerehashing;        /* Incremental rehash in serverCron() */
     int active_defrag_running;  /* Active defragmentation running (holds current scan aggressiveness) */
     char *requirepass;          /* Pass for AUTH command, or NULL */
-    char *pidfile;              /* PID file path */
+    char *pidfile;              /* PID 文件路径 */
     int arch_bits;              /* 32 or 64 depending on sizeof(long) */
     int cronloops;              /* Number of times the cron function run */
     char runid[CONFIG_RUN_ID_SIZE+1];  /* ID always different at every exec. */
@@ -964,9 +964,9 @@ struct redisServer {
                                    client blocked on a module command needs
                                    to be processed. */
     /* Networking */
-    int port;                   /* TCP listening port */
+    int port;                   /* TCP 监听端口 */
     int tcp_backlog;            /* TCP listen() backlog */
-    char *bindaddr[CONFIG_BINDADDR_MAX]; /* Addresses we should bind to */
+    char *bindaddr[CONFIG_BINDADDR_MAX]; /* 我们应该绑定到的地址 */
     int bindaddr_count;         /* Number of addresses in server.bindaddr[] */
     char *unixsocket;           /* UNIX socket path */
     mode_t unixsocketperm;      /* UNIX socket permission */
@@ -1189,7 +1189,7 @@ struct redisServer {
     int get_ack_from_slaves;            /* If true we send REPLCONF GETACK. */
     /* Limits */
     unsigned int maxclients;            /* Max number of simultaneous clients */
-    unsigned long long maxmemory;   /* Max number of memory bytes to use */
+    unsigned long long maxmemory;   /* 要使用的最大内存字节数 */
     int maxmemory_policy;           /* Policy for key eviction */
     int maxmemory_samples;          /* Pricision of random sampling */
     int lfu_log_factor;             /* LFU logarithmic counter factor. */
@@ -1299,7 +1299,7 @@ struct redisCommand {
     char *name;
     redisCommandProc *proc;
     int arity;
-    char *sflags; /* Flags as string representation, one char per flag. */
+    char *sflags; /* 标志为字符串表示，每个标志一个字符. */
     int flags;    /* The actual flags, obtained from the 'sflags' field. */
     /* Use a function to determine keys arguments in a command line.
      * Used for Redis Cluster redirect. */
@@ -1935,7 +1935,7 @@ char *redisGitSHA1(void);
 char *redisGitDirty(void);
 uint64_t redisBuildId(void);
 
-/* Commands prototypes */
+/* 命令原型 */
 void authCommand(client *c);
 void pingCommand(client *c);
 void echoCommand(client *c);

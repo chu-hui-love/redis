@@ -5225,7 +5225,7 @@ int moduleUnload(sds name) {
     return REDISMODULE_OK;
 }
 
-/* Redis MODULE command.
+/* Redis MODULE √¸¡Ó.
  *
  * MODULE LOAD <path> [args...] */
 void moduleCommand(client *c) {
