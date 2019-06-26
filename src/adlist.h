@@ -1,4 +1,4 @@
-/* adlist.h - A generic doubly linked list implementation
+/* adlist.h - 通用的双向链表实现
  *
  * Copyright (c) 2006-2012, Salvatore Sanfilippo <antirez at gmail dot com>
  * All rights reserved.
@@ -31,7 +31,7 @@
 #ifndef __ADLIST_H__
 #define __ADLIST_H__
 
-/* Node, List, and Iterator are the only data structures used currently. */
+/* Node,List和Iterator是目前使用的唯一数据结构. */
 
 typedef struct listNode {
     struct listNode *prev;
@@ -53,7 +53,7 @@ typedef struct list {
     unsigned long len;
 } list;
 
-/* Functions implemented as macros */
+/* 作为宏实现的函数 */
 #define listLength(l) ((l)->len)
 #define listFirst(l) ((l)->head)
 #define listLast(l) ((l)->tail)
@@ -69,7 +69,7 @@ typedef struct list {
 #define listGetFree(l) ((l)->free)
 #define listGetMatchMethod(l) ((l)->match)
 
-/* Prototypes */
+/* 原型 */
 list *listCreate(void);
 void listRelease(list *list);
 void listEmpty(list *list);
@@ -88,7 +88,7 @@ void listRewindTail(list *list, listIter *li);
 void listRotate(list *list);
 void listJoin(list *l, list *o);
 
-/* Directions for iterators */
+/* 方向迭代器 */
 #define AL_START_HEAD 0
 #define AL_START_TAIL 1
 

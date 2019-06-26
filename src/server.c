@@ -4150,7 +4150,7 @@ int main(int argc, char **argv) {
     checkTcpBacklogSettings();
 
     if (!server.sentinel_mode) {
-        /* Things not needed when running in Sentinel mode. */
+        /* 在哨兵模式下运行时不需要的东西. */
         serverLog(LL_WARNING,"Server initialized");
     #ifdef __linux__
         linuxMemoryWarnings();

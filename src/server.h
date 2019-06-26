@@ -940,8 +940,8 @@ struct redisServer {
                                    is enabled. */
     int hz;                     /* serverCron() calls frequency in hertz */
     redisDb *db;
-    dict *commands;             /* Command table */
-    dict *orig_commands;        /* Command table before command renaming. */
+    dict *commands;             /* 命令表 */
+    dict *orig_commands;        /* 命令重命名之前的命令表 Command table before command renaming. */
     aeEventLoop *el;
     unsigned int lruclock;      /* Clock for LRU eviction */
     int shutdown_asap;          /* SHUTDOWN needed ASAP */
