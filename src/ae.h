@@ -60,7 +60,7 @@
 
 struct aeEventLoop;
 
-/* Types and data structures */
+/* 类型和数据结构 */
 typedef void aeFileProc(struct aeEventLoop *eventLoop, int fd, void *clientData, int mask);
 typedef int aeTimeProc(struct aeEventLoop *eventLoop, long long id, void *clientData);
 typedef void aeEventFinalizerProc(struct aeEventLoop *eventLoop, void *clientData);

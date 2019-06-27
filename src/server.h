@@ -83,7 +83,7 @@ typedef long long mstime_t; /* millisecond time type. */
 #define CONFIG_MIN_HZ            1
 #define CONFIG_MAX_HZ            500
 #define MAX_CLIENTS_PER_CLOCK_TICK 200          /* HZ is adapted based on that. */
-#define CONFIG_DEFAULT_SERVER_PORT        6379  /* TCP port. */
+#define CONFIG_DEFAULT_SERVER_PORT        6379  /* TCP 端口. */
 #define CONFIG_DEFAULT_TCP_BACKLOG       511    /* TCP listen backlog. */
 #define CONFIG_DEFAULT_CLIENT_TIMEOUT       0   /* 默认客户端超时:无穷大 */
 #define CONFIG_DEFAULT_DBNUM     16
@@ -942,7 +942,7 @@ struct redisServer {
     redisDb *db;
     dict *commands;             /* 命令表 */
     dict *orig_commands;        /* 命令重命名之前的命令表 Command table before command renaming. */
-    aeEventLoop *el;
+    aeEventLoop *el;            /*消息循环*/
     unsigned int lruclock;      /* Clock for LRU eviction */
     int shutdown_asap;          /* SHUTDOWN needed ASAP */
     int activerehashing;        /* Incremental rehash in serverCron() */
@@ -959,7 +959,7 @@ struct redisServer {
     dict *moduleapi;            /* Exported core APIs dictionary for modules. */
     dict *sharedapi;            /* Like moduleapi but containing the APIs that
                                    modules share with each other. */
-    list *loadmodule_queue;     /* List of modules to load at startup. */
+    list *loadmodule_queue;     /*启动时加载的模块列表. */
     int module_blocked_pipe[2]; /* Pipe used to awake the event loop if a
                                    client blocked on a module command needs
                                    to be processed. */
@@ -970,9 +970,9 @@ struct redisServer {
     int bindaddr_count;         /* Number of addresses in server.bindaddr[] */
     char *unixsocket;           /* UNIX socket path */
     mode_t unixsocketperm;      /* UNIX socket permission */
-    int ipfd[CONFIG_BINDADDR_MAX]; /* TCP socket file descriptors */
+    int ipfd[CONFIG_BINDADDR_MAX]; /*TCP socket文件描述符 */
     int ipfd_count;             /* Used slots in ipfd[] */
-    int sofd;                   /* Unix socket file descriptor */
+    int sofd;                   /* Unix socket 文件描述符 */
     int cfd[CONFIG_BINDADDR_MAX];/* Cluster bus listening socket */
     int cfd_count;              /* Used slots in cfd[] */
     list *clients;              /* List of active clients */
@@ -1039,7 +1039,7 @@ struct redisServer {
         int idx;
     } inst_metric[STATS_METRIC_COUNT];
     /* Configuration */
-    int verbosity;                  /* Loglevel in redis.conf */
+    int verbosity;                  /* redis.conf中的log级别  */
     int maxidletime;                /* Client timeout in seconds */
     int tcpkeepalive;               /* Set SO_KEEPALIVE if non-zero. */
     int active_expire_enabled;      /* Can be disabled for testing purposes. */
@@ -1190,7 +1190,7 @@ struct redisServer {
     /* Limits */
     unsigned int maxclients;            /* Max number of simultaneous clients */
     unsigned long long maxmemory;   /* 要使用的最大内存字节数 */
-    int maxmemory_policy;           /* Policy for key eviction */
+    int maxmemory_policy;           /* key驱逐策略Policy for key eviction */
     int maxmemory_samples;          /* Pricision of random sampling */
     int lfu_log_factor;             /* LFU logarithmic counter factor. */
     int lfu_decay_time;             /* LFU counter decay factor. */
@@ -1281,8 +1281,7 @@ struct redisServer {
     /* System hardware info */
     size_t system_memory_size;  /* Total memory in system as reported by OS */
 
-    /* Mutexes used to protect atomic variables when atomic builtins are
-     * not available. */
+    /* 当原子内置不可用时,互斥锁用于保护原子变量*/
     pthread_mutex_t lruclock_mutex;
     pthread_mutex_t next_client_id_mutex;
     pthread_mutex_t unixtime_mutex;

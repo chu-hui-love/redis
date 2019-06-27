@@ -1347,7 +1347,10 @@ int serverCron(struct aeEventLoop *eventLoop, long long id, void *clientData) {
     return 1000/server.hz;
 }
 
-/* This function gets called every time Redis is entering the
+/*
+ * 每次Redis进入事件驱动库的主循环时,即在为就绪文件描述符休眠之前,都会调用此函数.
+ * 
+ *This function gets called every time Redis is entering the
  * main loop of the event driven library, that is, before to sleep
  * for ready file descriptors. */
 void beforeSleep(struct aeEventLoop *eventLoop) {
@@ -1404,7 +1407,10 @@ void beforeSleep(struct aeEventLoop *eventLoop) {
     if (moduleCount()) moduleReleaseGIL();
 }
 
-/* This function is called immadiately after the event loop multiplexing
+/*
+ * 该函数在事件循环多路复用API返回后立即调用,通过调用不同的事件回调,控件将很快返回到Redis.
+ * 
+ * This function is called immadiately after the event loop multiplexing
  * API returned, and the control is going to soon return to Redis by invoking
  * the different events callbacks. */
 void afterSleep(struct aeEventLoop *eventLoop) {
@@ -1412,7 +1418,7 @@ void afterSleep(struct aeEventLoop *eventLoop) {
     if (moduleCount()) moduleAcquireGIL();
 }
 
-/* =========================== Server initialization ======================== */
+/* =========================== 服务初始化 ======================== */
 
 void createSharedObjects(void) {
     int j;
@@ -1509,12 +1515,18 @@ void createSharedObjects(void) {
     shared.maxstring = sdsnew("maxstring");
 }
 
+/*
+ * 初始化服务配置
+ * 如果在启动服务时没有设置redis.conf参数,则使用默认值
+*/
 void initServerConfig(void) {
     int j;
 
 
 
-
+    /**
+     * 初始化互斥锁
+     */
     pthread_mutex_init(&server.next_client_id_mutex,NULL);
     pthread_mutex_init(&server.lruclock_mutex,NULL);
     pthread_mutex_init(&server.unixtime_mutex,NULL);
@@ -1530,7 +1542,7 @@ void initServerConfig(void) {
     server.hz = server.config_hz = CONFIG_DEFAULT_HZ;
     server.dynamic_hz = CONFIG_DEFAULT_DYNAMIC_HZ;
     server.arch_bits = (sizeof(long) == 8) ? 64 : 32;
-    server.port = CONFIG_DEFAULT_SERVER_PORT;
+    server.port = CONFIG_DEFAULT_SERVER_PORT; /*默认TCP端口为6379*/
     server.tcp_backlog = CONFIG_DEFAULT_TCP_BACKLOG;
     server.bindaddr_count = 0;
     server.unixsocket = NULL;
@@ -1594,7 +1606,7 @@ void initServerConfig(void) {
     server.blocked_clients = 0;
     memset(server.blocked_clients_by_type,0,
            sizeof(server.blocked_clients_by_type));
-    server.maxmemory = CONFIG_DEFAULT_MAXMEMORY;
+    server.maxmemory = CONFIG_DEFAULT_MAXMEMORY;  /*配置默认使用最大字节数 默认值为0,表示无限制*/
     server.maxmemory_policy = CONFIG_DEFAULT_MAXMEMORY_POLICY;
     server.maxmemory_samples = CONFIG_DEFAULT_MAXMEMORY_SAMPLES;
     server.lfu_log_factor = CONFIG_DEFAULT_LFU_LOG_FACTOR;
@@ -1726,8 +1738,8 @@ void initServerConfig(void) {
 
 extern char **environ;
 
-/* Restart the server, executing the same executable that started this
- * instance, with the same arguments and configuration file.
+/*
+ * 使用相同的参数和配置文件重新启动服务器,执行启动此实例的相同可执行文件.
  *
  * The function is designed to directly call execve() so that the new
  * server instance will retain the PID of the previous one.
@@ -1890,20 +1902,18 @@ void checkTcpBacklogSettings(void) {
 #endif
 }
 
-/* Initialize a set of file descriptors to listen to the specified 'port'
- * binding the addresses specified in the Redis server configuration.
+/* 初始化一组文件描述符,以侦听绑定在Redis服务器配置中指定的地址的指定"端口".
  *
- * The listening file descriptors are stored in the integer array 'fds'
- * and their number is set in '*count'.
+ * 监听文件描述符存储在整数数组"fds"中,它们的编号设置在'*count'中.
  *
- * The addresses to bind are specified in the global server.bindaddr array
- * and their number is server.bindaddr_count. If the server configuration
- * contains no specific addresses to bind, this function will try to
- * bind * (all addresses) for both the IPv4 and IPv6 protocols.
+ * 要绑定的地址在全局server.bindaddr数组中指定,其编号为server.bindaddr_count.
+ * 如果服务器配置不包含要绑定的特定地址,则此函数将尝试绑定IPv4和IPv6协议的(所有地址)
  *
- * On success the function returns C_OK.
  *
- * On error the function returns C_ERR. For the function to be on
+ *
+ *函数成功返回C_OK.
+ *
+ * 出错时,函数返回C_ERR. For the function to be on
  * error, at least one of the server.bindaddr addresses was
  * impossible to bind, or no bind addresses were specified in the server
  * configuration but the function is not able to bind * for at least
@@ -1911,8 +1921,7 @@ void checkTcpBacklogSettings(void) {
 int listenToPort(int port, int *fds, int *count) {
     int j;
 
-    /* Force binding of 0.0.0.0 if no bind address is specified, always
-     * entering the loop if j == 0. */
+    /* 如果没有指定绑定地址,则强制绑定为0.0.0.0,如果j == 0，则始终进入循环*/
     if (server.bindaddr_count == 0) server.bindaddr[0] = NULL;
     for (j = 0; j < server.bindaddr_count || j == 0; j++) {
         if (server.bindaddr[j] == NULL) {
@@ -2008,12 +2017,16 @@ void resetServerStats(void) {
     server.aof_delayed_fsync = 0;
 }
 
+/*
+* 初始化服务
+*/
 void initServer(void) {
     int j;
 
     signal(SIGHUP, SIG_IGN);
     signal(SIGPIPE, SIG_IGN);
     setupSignalHandlers();
+
 
     if (server.syslog_enabled) {
         openlog(server.syslog_ident, LOG_PID | LOG_NDELAY | LOG_NOWAIT,
@@ -3743,9 +3756,12 @@ void usage(void) {
     exit(1);
 }
 
+/**
+ * 打印logo
+ */
 void redisAsciiArt(void) {
 #include "asciilogo.h"
-    char *buf = zmalloc(1024*16);
+    char *buf = zmalloc(1024*32);
     char *mode;
 
     if (server.cluster_enabled) mode = "cluster";
@@ -3780,6 +3796,9 @@ void redisAsciiArt(void) {
 }
 
 static void sigShutdownHandler(int sig) {
+
+
+
     char *msg;
 
     switch (sig) {
@@ -3835,8 +3854,10 @@ void setupSignalHandlers(void) {
 
 void memtest(size_t megabytes, int passes);
 
-/* Returns 1 if there is --sentinel among the arguments or if
- * argv[0] contains "redis-sentinel". */
+/* 
+ * 检查是否为哨兵模式
+ * 如果参数中有--sentinel或argv[0]包含"redis-sentinel",则返回1.
+ */
 int checkForSentinelMode(int argc, char **argv) {
     int j;
 
@@ -4020,6 +4041,7 @@ int main(int argc, char **argv) {
     getRandomHexChars(hashseed,sizeof(hashseed));
     dictSetHashFunctionSeed((uint8_t*)hashseed);
     server.sentinel_mode = checkForSentinelMode(argc,argv);
+	// 执行默认初始化
     initServerConfig();
     moduleInitModulesSystem();
 
@@ -4044,6 +4066,8 @@ int main(int argc, char **argv) {
         redis_check_rdb_main(argc,argv,NULL);
     else if (strstr(argv[0],"redis-check-aof") != NULL)
         redis_check_aof_main(argc,argv);
+	
+	serverLog(LL_WARNING,"server.c 4047current param count=%d",argc);
 
     if (argc >= 2) {
         j = 1; /* First option to parse in argv[] */
@@ -4138,6 +4162,7 @@ int main(int argc, char **argv) {
     initServer();
     if (background || server.pidfile) createPidFile();
     redisSetProcTitle(argv[0]);
+	// 屏幕上打印logo
     redisAsciiArt();
     checkTcpBacklogSettings();
 

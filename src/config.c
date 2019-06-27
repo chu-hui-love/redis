@@ -171,8 +171,6 @@ void queueLoadModule(sds path, sds *argv, int argc) {
 
 void loadServerConfigFromString(char *config) {
 
-	serverLog(LL_WARNING, "config.c 174 loadServerConfigFromString called config=%s",config);
-
     char *err = NULL;
     int linenum = 0, totlines, i;
     int slaveof_linenum = 0;

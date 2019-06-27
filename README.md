@@ -107,7 +107,7 @@ networking.c
 * 命令实现使用`addReply*()`函数系列,以便将数据附加到客户端结构,该数据将作为对执行的给定命令的回复传输到客户端.
 * `writeToClient()`将输出缓冲区中待处理的数据发送到客户端,并由*可写事件处理器*`sendReplyToClient()`调用。
 * `readQueryFromClient()` 是*可读事件处理器*,并将从客户端读取的数据累积到查询缓冲区中.
-* `processInputBuffer()` 是根据Redis协议解析客户端查询缓冲区的入口点.一旦命令准备好被处理,它就会调用`processCommand（）`,它在`server.c`中定义,以便实际执行命令.
+* `processInputBuffer()` 是根据Redis协议解析客户端查询缓冲区的入口点.一旦命令准备好被处理,它就会调用`processCommand()`,它在`server.c`中定义,以便实际执行命令.
 * `freeClient()`释放、断开连接并删除客户端.
 
 aof.c and rdb.c
