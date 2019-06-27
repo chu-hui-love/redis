@@ -346,7 +346,7 @@ typedef long long mstime_t; /* millisecond time type. */
 /* Anti-warning macro... */
 #define UNUSED(V) ((void) V)
 
-#define ZSKIPLIST_MAXLEVEL 64 /* Should be enough for 2^64 elements */
+#define ZSKIPLIST_MAXLEVEL 64 /* 2^64个元素应该足够了吧 */
 #define ZSKIPLIST_P 0.25      /* Skiplist P = 1/4 */
 
 /* Append only defines */
@@ -797,7 +797,7 @@ struct sharedObjectsStruct {
     sds minstring, maxstring;
 };
 
-/* ZSET使用专业版的Skiplists */
+/* Skiplists 数据节点 */
 typedef struct zskiplistNode {
     sds ele;
     double score;

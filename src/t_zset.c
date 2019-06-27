@@ -35,13 +35,18 @@
 /* ZSETs are ordered sets using two data structures to hold the same elements
  * in order to get O(log(N)) INSERT and REMOVE operations into a sorted
  * data structure.
+ * zset是使用两个数据结构来保存相同元素的有序集合,
+ * 以便以O(log(N))操作插入和删除到排序的数据结构中.
  *
  * The elements are added to a hash table mapping Redis objects to scores.
  * At the same time the elements are added to a skip list mapping scores
  * to Redis objects (so objects are sorted by scores in this "view").
  *
- * Note that the SDS string representing the element is the same in both
- * the hash table and skiplist in order to save memory. What we do in order
+ *
+ * 请注意,表示元素的SDS字符串在哈希表和skiplist中是相同的，以节省内存.
+ * 为了更容易地管理共享的SDS字符串,我们所做的是仅在zslFreeNode()中释放SDS字符串.
+ * 字典没有无值的方法集.所以我们应该总是从字典中删除一个元素.然后从skiplist中删除.
+ What we do in order
  * to manage the shared SDS string more easily is to free the SDS string
  * only in zslFreeNode(). The dictionary has no value free method set.
  * So we should always remove an element from the dictionary, and later from
@@ -50,8 +55,10 @@
  * This skiplist implementation is almost a C translation of the original
  * algorithm described by William Pugh in "Skip Lists: A Probabilistic
  * Alternative to Balanced Trees", modified in three ways:
- * a) this implementation allows for repeated scores.
- * b) the comparison is not just by key (our 'score') but by satellite data.
+ * 这个skiplist实现几乎是William Pugh在《跳跃列表:平衡树的概率选择》一书中描述的原始算法的C版本,
+ * 经过了三种方式的修改:
+ * a) this implementation allows for repeated scores.这种实现允许重复评分
+ * b) the comparison is not just by key (our 'score') but by satellite data.这种比较不仅仅是通过键(我们的“得分”)，还通过卫星数据
  * c) there is a back pointer, so it's a doubly linked list with the back
  * pointers being only at "level 1". This allows to traverse the list
  * from tail to head, useful for ZREVRANGE. */
@@ -66,8 +73,10 @@
 int zslLexValueGteMin(sds value, zlexrangespec *spec);
 int zslLexValueLteMax(sds value, zlexrangespec *spec);
 
-/* Create a skiplist node with the specified number of levels.
- * The SDS string 'ele' is referenced by the node after the call. */
+/* 
+ * 创建具有指定数量级别的skiplist节点.
+ * 调用后,节点引用SDS字符串"ele". 
+ */
 zskiplistNode *zslCreateNode(int level, double score, sds ele) {
     zskiplistNode *zn =
         zmalloc(sizeof(*zn)+level*sizeof(struct zskiplistLevel));
