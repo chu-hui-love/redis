@@ -797,7 +797,7 @@ struct sharedObjectsStruct {
     sds minstring, maxstring;
 };
 
-/* ZSETs use a specialized version of Skiplists */
+/* ZSET使用专业版的Skiplists */
 typedef struct zskiplistNode {
     sds ele;
     double score;

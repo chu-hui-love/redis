@@ -1954,7 +1954,8 @@ int listenToPort(int port, int *fds, int *count) {
              * otherwise fds[*count] will be ANET_ERR and we'll print an
              * error and return to the caller with an error. */
             if (*count + unsupported == 2) break;
-        } else if (strchr(server.bindaddr[j],':')) {
+        }
+		else if (strchr(server.bindaddr[j],':')) {
             /* Bind IPv6 address. */
             fds[*count] = anetTcp6Server(server.neterr,port,server.bindaddr[j],
                 server.tcp_backlog);

@@ -60,7 +60,7 @@
 #include <math.h>
 
 /*-----------------------------------------------------------------------------
- * Skiplist implementation of the low level API
+ * 底层跳跃表实现API
  *----------------------------------------------------------------------------*/
 
 int zslLexValueGteMin(sds value, zlexrangespec *spec);
@@ -76,7 +76,7 @@ zskiplistNode *zslCreateNode(int level, double score, sds ele) {
     return zn;
 }
 
-/* Create a new skiplist. */
+/* 创建一个新的跳跃表. */
 zskiplist *zslCreate(void) {
     int j;
     zskiplist *zsl;
@@ -94,7 +94,7 @@ zskiplist *zslCreate(void) {
     return zsl;
 }
 
-/* Free the specified skiplist node. The referenced SDS string representation
+/* 释放指定的跳跃表节点. The referenced SDS string representation
  * of the element is freed too, unless node->ele is set to NULL before calling
  * this function. */
 void zslFreeNode(zskiplistNode *node) {
