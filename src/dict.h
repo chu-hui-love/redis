@@ -64,8 +64,7 @@ typedef struct dictType {
     void (*valDestructor)(void *privdata, void *obj);
 } dictType;
 
-/* This is our hash table structure. Every dictionary has two of this as we
- * implement incremental rehashing, for the old to the new table. */
+/* 这是hash表结构. 每个字典都有两个,因为我们实现了从旧表到新表的增量重写. */
 typedef struct dictht {
     dictEntry **table;
     unsigned long size;
@@ -78,7 +77,7 @@ typedef struct dict {
     void *privdata;
     dictht ht[2];
     long rehashidx; /* 如果rehashidx == -1,则不进行重哈希 */
-    unsigned long iterators; /* number of iterators currently running */
+    unsigned long iterators; /* 当前正在运行的迭代器数 */
 } dict;
 
 /* If safe is set to 1 this is a safe iterator, that means, you can call
