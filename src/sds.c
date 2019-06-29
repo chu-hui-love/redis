@@ -73,10 +73,9 @@ static inline char sdsReqType(size_t string_size) {
 #endif
 }
 
-/* Create a new sds string with the content specified by the 'init' pointer
- * and 'initlen'.
- * If NULL is used for 'init' the string is initialized with zero bytes.
- * If SDS_NOINIT is used, the buffer is left uninitialized;
+/* 使用'init'指针和'initlen'指定的内容创建一个新的sds字符串.
+ * 如果NULL用于'init'，则字符串初始化为零字节.
+ * 如果使用SDS_NOINIT,则缓冲区保持未初始化状态;
  *
  * The string is always null-termined (all the sds strings are, always) so
  * even if you create an sds string with:
@@ -150,6 +149,7 @@ sds sdsempty(void) {
 }
 
 /* Create a new sds string starting from a null terminated C string. */
+/* 创建一个新的sds字符串*/
 sds sdsnew(const char *init) {
     size_t initlen = (init == NULL) ? 0 : strlen(init);
     return sdsnewlen(init, initlen);

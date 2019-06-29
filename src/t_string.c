@@ -34,6 +34,9 @@
  * String Commands
  *----------------------------------------------------------------------------*/
 
+/**
+ * 检测字符串的长度,字符串的最大长度为512M
+ */
 static int checkStringLength(client *c, long long size) {
     if (size > 512*1024*1024) {
         addReplyError(c,"string exceeds maximum allowed size (512MB)");

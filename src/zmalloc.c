@@ -205,6 +205,10 @@ void zfree(void *ptr) {
 #endif
 }
 
+/*
+ * 字符串复制
+ * 调用string.h中为库函数
+*/
 char *zstrdup(const char *s) {
     size_t l = strlen(s)+1;
     char *p = zmalloc(l);

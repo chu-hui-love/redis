@@ -1,13 +1,12 @@
-/* This file implements atomic counters using __atomic or __sync macros if
- * available, otherwise synchronizing different threads using a mutex.
+/* 此文件使用__atomic或__sync宏(如果可用)实现原子计数器,否则使用互斥锁同步不同的线程.
  *
- * The exported interface is composed of three macros:
+ * 导出的接口由三个宏组成:
  *
- * atomicIncr(var,count) -- Increment the atomic counter
- * atomicGetIncr(var,oldvalue_var,count) -- Get and increment the atomic counter
- * atomicDecr(var,count) -- Decrement the atomic counter
- * atomicGet(var,dstvar) -- Fetch the atomic counter value
- * atomicSet(var,value)  -- Set the atomic counter value
+ * atomicIncr(var,count) -- 增加原子计数器
+ * atomicGetIncr(var,oldvalue_var,count) -- 获取并且增加原子计数器
+ * atomicDecr(var,count) -- 减少原子计数器
+ * atomicGet(var,dstvar) -- 获取原子计数器值
+ * atomicSet(var,value)  -- 设置原子计数器值
  *
  * The variable 'var' should also have a declared mutex with the same
  * name and the "_mutex" postfix, for instance:
@@ -28,33 +27,6 @@
  *  doSomethingWith(oldvalue);
  *
  * ----------------------------------------------------------------------------
- *
- * Copyright (c) 2015, Salvatore Sanfilippo <antirez at gmail dot com>
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *   * Redistributions of source code must retain the above copyright notice,
- *     this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
- *   * Neither the name of Redis nor the names of its contributors may be used
- *     to endorse or promote products derived from this software without
- *     specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include <pthread.h>
@@ -99,7 +71,7 @@
 #define REDIS_ATOMIC_API "sync-builtin"
 
 #else
-/* Implementation using pthread mutex. */
+/* 使用pthread互斥锁实现. */
 
 #define atomicIncr(var,count) do { \
     pthread_mutex_lock(&var ## _mutex); \
