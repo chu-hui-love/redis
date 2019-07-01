@@ -181,8 +181,8 @@ typedef long long mstime_t; /* millisecond time type. */
 #define STATS_METRIC_COUNT 3
 
 /* Protocol and I/O related defines */
-#define PROTO_MAX_QUERYBUF_LEN  (1024*1024*1024) /* 1GB max query buffer. */
-#define PROTO_IOBUF_LEN         (1024*16)  /* Generic I/O buffer size */
+#define PROTO_MAX_QUERYBUF_LEN  (1024*1024*1024) /* 1GB最大查询缓冲区. */
+#define PROTO_IOBUF_LEN         (1024*16)  /* 通用I/O缓冲区大小 */
 #define PROTO_REPLY_CHUNK_BYTES (16*1024) /* 16k output buffer */
 #define PROTO_INLINE_MAX_SIZE   (1024*64) /* Max size of inline reads */
 #define PROTO_MBULK_BIG_ARG     (1024*32)
@@ -198,7 +198,7 @@ typedef long long mstime_t; /* millisecond time type. */
 #define CONFIG_FDSET_INCR (CONFIG_MIN_RESERVED_FDS+96)
 
 /* Hash table parameters */
-#define HASHTABLE_MIN_FILL        10      /* Minimal hash table fill 10% */
+#define HASHTABLE_MIN_FILL        10      /* 最小哈希表填充10% */
 
 /* Command flags. Please check the command table defined in the redis.c file
  * for more information about the meaning of every flag. */
@@ -268,7 +268,7 @@ typedef long long mstime_t; /* millisecond time type. */
 #define BLOCKED_ZSET 5    /* BZPOP et al. */
 #define BLOCKED_NUM 6     /* Number of blocked states. */
 
-/* Client request types */
+/* 客户端请求类型 */
 #define PROTO_REQ_INLINE 1
 #define PROTO_REQ_MULTIBULK 2
 
@@ -709,8 +709,8 @@ typedef struct readyList {
     robj *key;
 } readyList;
 
-/* With multiplexing we need to take per-client state.
- * Clients are taken in a linked list. */
+/* 使用多路复用，我们需要每个客户端状态.
+ * 客户端被存放在一个链表中. */
 typedef struct client {
     uint64_t id;            /* Client incremental unique ID. */
     int fd;                 /* Client socket. */
@@ -726,8 +726,8 @@ typedef struct client {
     int argc;               /* 当前命令的参数数量. */
     robj **argv;            /* 当前命令的参数. */
     struct redisCommand *cmd, *lastcmd;  /* Last command executed. */
-    int reqtype;            /* Request protocol type: PROTO_REQ_* */
-    int multibulklen;       /* Number of multi bulk arguments left to read. */
+    int reqtype;            /* 请求协议类型: PROTO_REQ_* */
+    int multibulklen;       /* 要读取的多个批量参数的数量. */
     long bulklen;           /* Length of bulk argument in multi bulk request. */
     list *reply;            /* List of reply objects to send to the client. */
     unsigned long long reply_bytes; /* Tot bytes of objects in reply list. */
@@ -1040,7 +1040,7 @@ struct redisServer {
     } inst_metric[STATS_METRIC_COUNT];
     /* Configuration */
     int verbosity;                  /* redis.conf中的log级别  */
-    int maxidletime;                /* Client timeout in seconds */
+    int maxidletime;                /* 客户端超时时间  (秒) */
     int tcpkeepalive;               /* Set SO_KEEPALIVE if non-zero. */
     int active_expire_enabled;      /* Can be disabled for testing purposes. */
     int active_defrag_enabled;

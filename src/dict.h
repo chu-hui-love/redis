@@ -1,10 +1,10 @@
-/* Hash Tables Implementation.
+/* hash表实现.
  *
- * This file implements in-memory hash tables with insert/del/replace/find/
- * get-random-element operations. Hash tables will auto-resize if needed
- * tables of power of two in size are used, collisions are handled by
- * chaining. See the source code for more information... :)
+ * 此文件使用insert/del/replace/find/get-random-element操作实现内存中的哈希表. 
+ * 如果需要使用大小为2的幂表,则哈希表将自动调整大小,
+ * 通过链接处理冲突.
  *
+ * 
  * Copyright (c) 2006-2012, Salvatore Sanfilippo <antirez at gmail dot com>
  * All rights reserved.
  *
@@ -75,7 +75,7 @@ typedef struct dictht {
 typedef struct dict {
     dictType *type;
     void *privdata;
-    dictht ht[2];
+    dictht ht[2];   /*ht 是做什么的 2019年7月1日10:42:44*/
     long rehashidx; /* 如果rehashidx == -1,则不进行重哈希 */
     unsigned long iterators; /* 当前正在运行的迭代器数 */
 } dict;
@@ -96,7 +96,7 @@ typedef struct dictIterator {
 typedef void (dictScanFunction)(void *privdata, const dictEntry *de);
 typedef void (dictScanBucketFunction)(void *privdata, dictEntry **bucketref);
 
-/* This is the initial size of every hash table */
+/* 这是每个hash表的初始化大小 */
 #define DICT_HT_INITIAL_SIZE     4
 
 /* ------------------------------- Macros ------------------------------------*/

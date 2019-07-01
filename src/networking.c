@@ -90,10 +90,9 @@ client *createClient(int fd) {
 	serverLog(LL_WARNING,"networking.c 90 createClient called fd=%d",fd);
 
 
-    /* passing -1 as fd it is possible to create a non connected client.
-     * This is useful since all the commands needs to be executed
-     * in the context of a client. When commands are executed in other
-     * contexts (for instance a Lua script) we need a non connected client. */
+    /* 传递-1作为fd可以创建一个非连接的客户端 passing -1 as fd it is possible to create a non connected client.
+     * 这很有用,因为所有命令都需要在客户端的上下文中执行.
+     * 当命令在其他上下文中执行时(例如Lua脚本),我们需要一个非连接的客户端. */
     if (fd != -1) {
         anetNonBlock(NULL,fd);
         anetEnableTcpNoDelay(NULL,fd);
@@ -1519,7 +1518,12 @@ void processInputBufferAndReplicate(client *c) {
     }
 }
 
+/*
+ * 每个从客户端过来的请求,都要经过这个函数
+ * 从客户端中将数据读出来
+ */
 void readQueryFromClient(aeEventLoop *el, int fd, void *privdata, int mask) {
+	// 数据强制转换
     client *c = (client*) privdata;
     int nread, readlen;
     size_t qblen;
@@ -1527,12 +1531,11 @@ void readQueryFromClient(aeEventLoop *el, int fd, void *privdata, int mask) {
     UNUSED(mask);
 
     readlen = PROTO_IOBUF_LEN;
-    /* If this is a multi bulk request, and we are processing a bulk reply
-     * that is large enough, try to maximize the probability that the query
-     * buffer contains exactly the SDS string representing the object, even
-     * at the risk of requiring more read(2) calls. This way the function
-     * processMultiBulkBuffer() can avoid copying buffers to create the
-     * Redis Object representing the argument. */
+    /* 如果这是一个多批量请求,并且我们正在处理一个足够大的批量响应,
+     * 那么即使冒着需要更多read(2)调用的风险,
+     * 也要尽量使查询缓冲区恰好包含表示对象的SDS字符串的概率最大化.
+     * 通过这种方式,processMultiBulkBuffer()函数可以避免复制缓冲区来创建表示参数的Redis对象.
+     */
     if (c->reqtype == PROTO_REQ_MULTIBULK && c->multibulklen && c->bulklen != -1
         && c->bulklen >= PROTO_MBULK_BIG_ARG)
     {
@@ -1547,6 +1550,7 @@ void readQueryFromClient(aeEventLoop *el, int fd, void *privdata, int mask) {
     if (c->querybuf_peak < qblen) c->querybuf_peak = qblen;
     c->querybuf = sdsMakeRoomFor(c->querybuf, readlen);
     nread = read(fd, c->querybuf+qblen, readlen);
+	// 读取过程中出错
     if (nread == -1) {
         if (errno == EAGAIN) {
             return;
@@ -1556,6 +1560,7 @@ void readQueryFromClient(aeEventLoop *el, int fd, void *privdata, int mask) {
             return;
         }
     } else if (nread == 0) {
+    	// 读到0个字节,认为客户端已经关闭
         serverLog(LL_VERBOSE, "Client closed connection");
         freeClient(c);
         return;

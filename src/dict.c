@@ -1,9 +1,9 @@
-/* Hash Tables Implementation.
+/* hash表实现.
  *
- * This file implements in memory hash tables with insert/del/replace/find/
- * get-random-element operations. Hash tables will auto resize if needed
- * tables of power of two in size are used, collisions are handled by
- * chaining. See the source code for more information... :)
+ * 此文件使用insert/del/replace/find/get-random-element操作实现内存中的哈希表. 
+ * 如果需要使用大小为2的幂表,则哈希表将自动调整大小,
+ * 通过链接处理冲突.
+
  *
  * Copyright (c) 2006-2012, Salvatore Sanfilippo <antirez at gmail dot com>
  * All rights reserved.
@@ -51,14 +51,15 @@
 #include <assert.h>
 #endif
 
-/* Using dictEnableResize() / dictDisableResize() we make possible to
- * enable/disable resizing of the hash table as needed. This is very important
- * for Redis, as we use copy-on-write and don't want to move too much memory
- * around when there is a child performing saving operations.
+/* 使用dictEnableResize()/dictDisableResize().我们可以根据需要启用/禁用哈希表的大小调整.
+ * 对Redis来说是非常重要的,因为我们使用的是写时复制,
+ * 并且当有一个孩子执行保存操作时,我们不想移动太多的内存.
  *
- * Note that even when dict_can_resize is set to 0, not all resizes are
- * prevented: a hash table is still allowed to grow if the ratio between
- * the number of elements and the buckets > dict_force_resize_ratio. */
+ *
+ * 请注意,即使将dict_can_resize设置为0,
+ * 也不会阻止所有调整大小:如果元素数量与存储桶之间的比率>dict_force_resize_ratio,
+ * 则仍允许哈希表增长.
+ */
 static int dict_can_resize = 1;
 static unsigned int dict_force_resize_ratio = 5;
 
@@ -97,8 +98,8 @@ uint64_t dictGenCaseHashFunction(const unsigned char *buf, int len) {
 
 /* ----------------------------- API implementation ------------------------- */
 
-/* Reset a hash table already initialized with ht_init().
- * NOTE: This function should only be called by ht_destroy(). */
+/* 重置已使用ht_init()初始化的哈希表.
+ * 注意:这个函数应该只能被ht_destory()调用. */
 static void _dictReset(dictht *ht)
 {
     ht->table = NULL;
@@ -107,7 +108,7 @@ static void _dictReset(dictht *ht)
     ht->used = 0;
 }
 
-/* Create a new hash table */
+/* 创建一个新的Hash表 */
 dict *dictCreate(dictType *type,
         void *privDataPtr)
 {
@@ -117,7 +118,7 @@ dict *dictCreate(dictType *type,
     return d;
 }
 
-/* Initialize the hash table */
+/* 初始化hash表 */
 int _dictInit(dict *d, dictType *type,
         void *privDataPtr)
 {
@@ -143,11 +144,10 @@ int dictResize(dict *d)
     return dictExpand(d, minimal);
 }
 
-/* Expand or create the hash table */
+/* 扩展或创建哈希表 */
 int dictExpand(dict *d, unsigned long size)
 {
-    /* the size is invalid if it is smaller than the number of
-     * elements already inside the hash table */
+    /* 如果它小于哈希表中已有的元素数,则该大小无效 */
     if (dictIsRehashing(d) || d->ht[0].used > size)
         return DICT_ERR;
 
@@ -249,14 +249,11 @@ int dictRehashMilliseconds(dict *d, int ms) {
     return rehashes;
 }
 
-/* This function performs just a step of rehashing, and only if there are
- * no safe iterators bound to our hash table. When we have iterators in the
- * middle of a rehashing we can't mess with the two hash tables otherwise
- * some element can be missed or duplicated.
+/* 此函数只执行重新散列的步骤,并且只有在没有绑定到哈希表的安全迭代器的情况下才会执行.
+ * 当我们在重新散列的过程中有迭代器时,我们不能搞乱这两个哈希表,否则一些元素可能被遗漏或重复.
  *
- * This function is called by common lookup or update operations in the
- * dictionary so that the hash table automatically migrates from H1 to H2
- * while it is actively used. */
+ * 此函数由字典中的常见查找或更新操作调用,以便在主动使用哈希表时自动从H1迁移到H2.
+ */
 static void _dictRehashStep(dict *d) {
     if (d->iterators == 0) dictRehash(d,1);
 }
@@ -267,27 +264,25 @@ int dictAdd(dict *d, void *key, void *val)
     dictEntry *entry = dictAddRaw(d,key,NULL);
 
     if (!entry) return DICT_ERR;
+	/*添加key和设置value,实际上是分开的*/
     dictSetVal(d, entry, val);
     return DICT_OK;
 }
 
 /* 底层添加或查找:
- * This function adds the entry but instead of setting a value returns the
- * dictEntry structure to the user, that will make sure to fill the value
- * field as he wishes.
+ * 这个函数添加了条目,但是没有设置值,而是将dictEntry结构返回给用户,
+ * 这将确保按照用户的意愿填充value字段.
  *
- * This function is also directly exposed to the user API to be called
- * mainly in order to store non-pointers inside the hash value, example:
+ * 此函数也直接暴露给要调用的用户API,主要是为了在散列值中存储非指针,例如:
  *
  * entry = dictAddRaw(dict,mykey,NULL);
  * if (entry != NULL) dictSetSignedIntegerVal(entry,1000);
  *
  * Return values:
  *
- * If key already exists NULL is returned, and "*existing" is populated
- * with the existing entry if existing is not NULL.
+ * 如果key已存在,则返回NULL,如果existing不为NULL,则使用现有条目填充"*existing".
  *
- * If key was added, the hash entry is returned to be manipulated by the caller.
+ * 如果添加了key,则返回哈希条目以由调用者操纵.
  */
 dictEntry *dictAddRaw(dict *d, void *key, dictEntry **existing)
 {
@@ -297,8 +292,7 @@ dictEntry *dictAddRaw(dict *d, void *key, dictEntry **existing)
 
     if (dictIsRehashing(d)) _dictRehashStep(d);
 
-    /* Get the index of the new element, or -1 if
-     * the element already exists. */
+    /* 获取新元素的索引,如果元素已经存在,则返回-1*/
     if ((index = _dictKeyIndex(d, key, dictHashKey(d,key), existing)) == -1)
         return NULL;
 
@@ -648,12 +642,9 @@ dictEntry *dictGetRandomKey(dict *d)
     return he;
 }
 
-/* This function samples the dictionary to return a few keys from random
- * locations.
+/* 这个函数对字典进行采样,以从随机位置返回几个键.
  *
- * It does not guarantee to return all the keys specified in 'count', nor
- * it does guarantee to return non-duplicated elements, however it will make
- * some effort to do both things.
+ * 它不保证返回'count'中指定的所有键,也不保证返回非重复元素,但是它会做一些努力来完成这两件事.
  *
  * Returned pointers to hash table entries are stored into 'des' that
  * points to an array of dictEntry pointers. The array must have room for
@@ -918,13 +909,13 @@ unsigned long dictScan(dict *d,
 
 /* ------------------------- private functions ------------------------------ */
 
-/* Expand the hash table if needed */
+/* 如果需要,扩展hash表*/
 static int _dictExpandIfNeeded(dict *d)
 {
-    /* Incremental rehashing already in progress. Return. */
+    /* 如果正在重新hash,直接返回 */
     if (dictIsRehashing(d)) return DICT_OK;
 
-    /* If the hash table is empty expand it to the initial size. */
+    /* 如果哈希表为空，则将其扩展为初始大小. */
     if (d->ht[0].size == 0) return dictExpand(d, DICT_HT_INITIAL_SIZE);
 
     /* If we reached the 1:1 ratio, and we are allowed to resize the hash
@@ -953,10 +944,8 @@ static unsigned long _dictNextPower(unsigned long size)
     }
 }
 
-/* Returns the index of a free slot that can be populated with
- * a hash entry for the given 'key'.
- * If the key already exists, -1 is returned
- * and the optional output parameter may be filled.
+/* 返回可以使用给定"key"的哈希条目填充的空闲槽的索引.
+ * 如果key已经存在,则返回-1并填充可选输出参数.
  *
  * Note that if we are in the process of rehashing the hash table, the
  * index is always returned in the context of the second (new) hash table. */
@@ -966,7 +955,7 @@ static long _dictKeyIndex(dict *d, const void *key, uint64_t hash, dictEntry **e
     dictEntry *he;
     if (existing) *existing = NULL;
 
-    /* Expand the hash table if needed */
+    /* 如果需要,扩展哈希表 */
     if (_dictExpandIfNeeded(d) == DICT_ERR)
         return -1;
     for (table = 0; table <= 1; table++) {
