@@ -66,6 +66,15 @@ typedef struct dictType {
 
 /* 这是hash表结构. 每个字典都有两个,因为我们实现了从旧表到新表的增量重写. */
 typedef struct dictht {
+	/*
+	 * 2019年7月2日20:39:25
+	 * 老子还在想,存储key,value的到底是个什么东西
+	 * 搞了半天,原来是个屌数组,为什么不直接声明成dictEntry [] 呢,非得搞一个双指针..
+	 * 直接声明成数组的样子,是会消耗连续空间的
+	 * 这种情况下,随取随用,..管他空间连续不连续呢(经debug,table[0] 和table[1]地址不一定连续)
+	 * dict的存储本质,就是一个数组
+	 */
+
     dictEntry **table;
     unsigned long size;
     unsigned long sizemask;

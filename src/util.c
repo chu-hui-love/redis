@@ -668,8 +668,8 @@ sds getAbsolutePath(char *filename) {
 }
 
 /*
- * Gets the proper timezone in a more portable fashion
- * i.e timezone variables are linux specific.
+ * 以更方便的方式获取适当的时区
+ * i.e 时区变量是特定于linux的.
  */
 
 unsigned long getTimeZone(void) {

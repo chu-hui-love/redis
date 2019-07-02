@@ -1221,7 +1221,7 @@ struct redisServer {
     /* time cache */
     time_t unixtime;    /* Unix time sampled every cron cycle. */
     time_t timezone;    /* Cached timezone. As set by tzset(). */
-    int daylight_active;    /* Currently in daylight saving time. */
+    int daylight_active;    /* 目前在夏令时. */
     long long mstime;   /* Like 'unixtime' but with milliseconds resolution. */
     /* Pubsub */
     dict *pubsub_channels;  /* Map channels to list of subscribed clients */
