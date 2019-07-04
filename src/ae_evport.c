@@ -41,9 +41,10 @@
 static int evport_debug = 0;
 
 /*
+ * 这个文件使用事件端口实现了ae API,自Solaris 10以来就出现在基于Solaris的系统上.
  * This file implements the ae API using event ports, present on Solaris-based
  * systems since Solaris 10.  Using the event port interface, we associate file
- * descriptors with the port.  Each association also includes the set of poll(2)
+ * descriptors with the port. 使用事件端口接口,我们将文件描述符与端口关联起来. Each association also includes the set of poll(2)
  * events that the consumer is interested in (e.g., POLLIN and POLLOUT).
  *
  * There's one tricky piece to this implementation: when we return events via

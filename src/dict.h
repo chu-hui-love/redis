@@ -71,7 +71,36 @@ typedef struct dictht {
 	 * 老子还在想,存储key,value的到底是个什么东西
 	 * 搞了半天,原来是个屌数组,为什么不直接声明成dictEntry [] 呢,非得搞一个双指针..
 	 * 直接声明成数组的样子,是会消耗连续空间的
-	 * 这种情况下,随取随用,..管他空间连续不连续呢(经debug,table[0] 和table[1]地址不一定连续)
+	 * 这种情况下,随取随用,..管他空间连续不连续呢
+	 *
+	 *
+	 * 2019年7月3日09:41:25
+	 * (经debug,table[0] 和table[1]中存储的地址不一定连续,但是&table[0]和&table[1]的地址一定连续..)
+	 * 下面这堆地址,是数组中存储的地址,也就是具体的dictEntry* 的地址
+	 *(gdb) p d->ht[0]->table[63] 0x60bbb0
+	 *$10 = (dictEntry *) 
+	 *(gdb) p d->ht[0]->table[62] 0x60b6a0
+	 *$11 = (dictEntry *) 
+	 *(gdb) p d->ht[0]->table[61] 0x60c380
+	 *$12 = (dictEntry *) 
+	 *(gdb) p d->ht[0]->table[60] 0x60c280
+	 *$13 = (dictEntry *) 
+	 *(gdb) p d->ht[0]->table[59] 0x60c4c0
+	 *
+	 * 下面这堆地址.是数组的地址,而不是数组中的内容的地址,一定是连续的..且,随下标的递增而递增,
+	 * 从而构成一个等差数列,d=8
+     *
+	 * (gdb) p &d->ht[0]->table[59]
+     * $17 = (dictEntry **) 0x60bdc8
+	 * (gdb) p &d->ht[0]->table[60]
+	 * $18 = (dictEntry **) 0x60bdd0
+	 * (gdb) p &d->ht[0]->table[61]
+	 * $19 = (dictEntry **) 0x60bdd8
+	 * (gdb) p &d->ht[0]->table[62] 
+	 * $20 = (dictEntry **) 0x60bde0
+	 * (gdb) p &d->ht[0]->table[63] 
+	 * $21 = (dictEntry **) 0x60bde8
+	 *
 	 * dict的存储本质,就是一个数组
 	 */
 

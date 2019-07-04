@@ -4026,7 +4026,7 @@ int main(int argc, char **argv) {
     int j;
 
 
-    /* We need to initialize our libraries, and the server configuration. */
+    /* 需要初始化redis的动态链接库和服务配置. */
 #ifdef INIT_SETPROCTITLE_REPLACEMENT
     spt_init(argc, argv);
 #endif

@@ -45,8 +45,7 @@
 #include <string.h>
 #include <ctype.h>
 
-/* Fast tolower() alike function that does not care about locale
- * but just returns a-z insetad of A-Z. */
+/* 类似于Fast tolower()的函数,它不关心本地环境,只返回a-z而不是A-Z. */
 int siptlw(int c) {
     if (c >= 'A' && c <= 'Z') {
         return c+('a'-'A');
