@@ -427,13 +427,14 @@ void trimStringObjectIfNeeded(robj *o) {
     }
 }
 
-/* Try to encode a string object in order to save space */
+/* 尝试编码字符串对象以节省空间 */
 robj *tryObjectEncoding(robj *o) {
     long value;
     sds s = o->ptr;
     size_t len;
 
-    /* Make sure this is a string object, the only type we encode
+    /* 确保这是一个字符串对象,这是我们在此函数中编码的唯一类型.
+     * Make sure this is a string object, the only type we encode
      * in this function. Other types use encoded memory efficient
      * representations but are handled by the commands implementing
      * the type. */
@@ -487,7 +488,7 @@ robj *tryObjectEncoding(robj *o) {
         return emb;
     }
 
-    /* We can't encode the object...
+    /* 不能编码对象...
      *
      * Do the last try, and at least optimize the SDS string inside
      * the string object to require little space, in case there

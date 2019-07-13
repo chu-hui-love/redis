@@ -160,7 +160,7 @@ static int dictSdsKeyCompare(void *privdata, const void *key1,
 static void dictSdsDestructor(void *privdata, void *val);
 static void dictListDestructor(void *privdata, void *val);
 
-/* Cluster Manager Command Info */
+/* 集群管理命令信息 */
 typedef struct clusterManagerCommand {
     char *name;
     int argc;

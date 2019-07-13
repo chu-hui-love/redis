@@ -5110,7 +5110,6 @@ void moduleLoadFromQueue(void) {
         }
     }
 }
-
 void moduleFreeModuleStructure(struct RedisModule *module) {
     listRelease(module->types);
     listRelease(module->filters);

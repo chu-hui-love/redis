@@ -92,7 +92,7 @@ typedef struct aeFiredEvent {
     int mask;
 } aeFiredEvent;
 
-/* 基于事件的程序的状态 */
+/* 基于事件的程序的状态,异步消息循环 */
 typedef struct aeEventLoop {
     int maxfd;   /* 当前注册的最高文件描述符 */
     int setsize; /* 跟踪的文件描述符的最大数量 */

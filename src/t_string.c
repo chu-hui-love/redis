@@ -66,6 +66,7 @@ static int checkStringLength(client *c, long long size) {
 #define OBJ_SET_EX (1<<2)     /* 如果时间给定的是秒 Set if time in seconds is given */
 #define OBJ_SET_PX (1<<3)     /* 如果时间给定的毫秒Set if time in ms in given */
 
+/*设置通用命令*/
 void setGenericCommand(client *c, int flags, robj *key, robj *val, robj *expire, int unit, robj *ok_reply, robj *abort_reply) {
     long long milliseconds = 0; /* initialized to avoid any harmness warning */
 
@@ -97,7 +98,10 @@ void setGenericCommand(client *c, int flags, robj *key, robj *val, robj *expire,
 /* SET key value [NX] [XX] [EX <seconds>] [PX <milliseconds>] */
 void setCommand(client *c) {
 
-	serverLog(LL_WARNING, "t_string.c 98 set command called command=%s",c->cmd->name);
+	serverLog(LL_WARNING, "t_string.c 98 set command called command=%s,databaseid=%d",
+		c->cmd->name,
+		c->db->id
+	);
 
     int j;
     robj *expire = NULL;

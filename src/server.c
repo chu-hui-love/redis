@@ -118,6 +118,7 @@ volatile unsigned long lru_clock; /* 服务器全局当前LRU时间. */
  *    请注意,可能触发DEL作为副作用的命令(如SET)不是快速命令.
  */
 struct redisCommand redisCommandTable[] = {
+	/*像这种函数指针的形式,使用java重写,可以采用函数指针*/
     {"module",moduleCommand,-2,"as",0,NULL,0,0,0,0,0},
     {"get",getCommand,2,"rF",0,NULL,1,1,1,0,0},
     {"set",setCommand,-3,"wm",0,NULL,1,1,1,0,0},
@@ -1699,6 +1700,7 @@ void initServerConfig(void) {
      * redis.conf using the rename-command directive. */
     server.commands = dictCreate(&commandTableDictType,NULL);
     server.orig_commands = dictCreate(&commandTableDictType,NULL);
+	// 初始化的时候,填充命令表
     populateCommandTable();
     server.delCommand = lookupCommandByCString("del");
     server.multiCommand = lookupCommandByCString("multi");
@@ -2192,11 +2194,20 @@ void initServer(void) {
     server.initial_memory_usage = zmalloc_used_memory();
 }
 
-/* Populates the Redis Command Table starting from the hard coded list
- * we have on top of redis.c file. */
+/* 填充redis命令表,从server.c文件顶部定义的硬编码命令表来填充redis命令表*/
 void populateCommandTable(void) {
     int j;
     int numcommands = sizeof(redisCommandTable)/sizeof(struct redisCommand);
+	serverLog(LL_WARNING,"the command counter=%d",numcommands);
+
+
+	/*命令被填充到server.commands中,
+	 * 从redisCommandTables中将命令名和flags抽取出来,存放到server.commands中
+	 * 
+	 * 同时,server.orig_commands亦被填充,目的是保留原始的命令行,
+	 * 因为redis.conf可能会重命名命令
+	*/
+
 
     for (j = 0; j < numcommands; j++) {
         struct redisCommand *c = redisCommandTable+j;
@@ -2223,9 +2234,11 @@ void populateCommandTable(void) {
             f++;
         }
 
+		
         retval1 = dictAdd(server.commands, sdsnew(c->name), c);
-        /* Populate an additional dictionary that will be unaffected
-         * by rename-command statements in redis.conf. */
+        /*
+	     * 填充一个不受redis.conf中的rename-command语句影响的额外dict
+         */
         retval2 = dictAdd(server.orig_commands, sdsnew(c->name), c);
         serverAssert(retval1 == DICT_OK && retval2 == DICT_OK);
     }
@@ -4167,7 +4180,7 @@ int main(int argc, char **argv) {
     checkTcpBacklogSettings();
 
     if (!server.sentinel_mode) {
-        /* 在哨兵模式下运行时不需要的东西. */
+        /* 在非哨兵模式下运行时不需要的东西. */
         serverLog(LL_WARNING,"Server initialized");
     #ifdef __linux__
         linuxMemoryWarnings();
@@ -4197,6 +4210,7 @@ int main(int argc, char **argv) {
 
     aeSetBeforeSleepProc(server.el,beforeSleep);
     aeSetAfterSleepProc(server.el,afterSleep);
+	/*启动事件循环,侦听新连接.*/
     aeMain(server.el);
     aeDeleteEventLoop(server.el);
     return 0;

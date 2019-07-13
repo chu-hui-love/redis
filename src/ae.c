@@ -44,6 +44,7 @@
 #include "zmalloc.h"
 #include "config.h"
 
+
 /* 包括此系统支持的最佳多路复用层.
  * 下面应该按性能降序排列. */
 #ifdef HAVE_EVPORT
@@ -61,6 +62,7 @@
 #endif
 
 aeEventLoop *aeCreateEventLoop(int setsize) {
+
     aeEventLoop *eventLoop;
     int i;
 
@@ -341,25 +343,25 @@ static int processTimeEvents(aeEventLoop *eventLoop) {
     return processed;
 }
 
-/* Process every pending time event, then every pending file event
- * (that may be registered by time event callbacks just processed).
+/*处理每个挂起的时间消息,然后处理每个挂起的文件消息(可能由刚刚处理的时间事件回调函数注册).
  * Without special flags the function sleeps until some file event
  * fires, or when the next time event occurs (if any).
  *
- * If flags is 0, the function does nothing and returns.
- * if flags has AE_ALL_EVENTS set, all the kind of events are processed.
- * if flags has AE_FILE_EVENTS set, file events are processed.
- * if flags has AE_TIME_EVENTS set, time events are processed.
- * if flags has AE_DONT_WAIT set the function returns ASAP until all
- * if flags has AE_CALL_AFTER_SLEEP set, the aftersleep callback is called.
- * the events that's possible to process without to wait are processed.
+ * 如果flags为0,则函数不执行任何操作并返回.
+ * 如果flags设置了AE_ALL_EVENTS,则处理所有类型的事件.
+ * if flags has AE_FILE_EVENTS set, 处理文件类型的事件.
+ * if flags has AE_TIME_EVENTS set, 处理事件类型的事件.
+ * if flags has AE_DONT_WAIT set 则该函数返回ASAP直到全部
+ * if flags has AE_CALL_AFTER_SLEEP set, 调用aftersleep回调.处理不需要等待就可以处理的事件
  *
- * The function returns the number of events processed. */
+ * 该函数返回已处理的事件数. */
 int aeProcessEvents(aeEventLoop *eventLoop, int flags)
 {
-    int processed = 0, numevents;
+    int processed = 0;
+	int numevents;
 
-    /* Nothing to do? return ASAP */
+
+    /* 无事可做? 返回 ASAP */
     if (!(flags & AE_TIME_EVENTS) && !(flags & AE_FILE_EVENTS)) return 0;
 
     /* Note that we want call select() even if there are no

@@ -195,12 +195,16 @@ typedef long long mstime_t; /* millisecond time type. */
  * of file descriptors we can handle are server.maxclients + RESERVED_FDS +
  * a few more to stay safe. Since RESERVED_FDS defaults to 32, we add 96
  * in order to make sure of not over provisioning more than 128 fds. */
+ /*
+  * 2019年7月13日15:16:54 配置消息文件描述符的大小
+  * 在配置服务器eventloop时,我们将其设置为可以处理的文件描述符的总数为server.maxclients + RESERVED_FDS+几个,以确保安全.
+  * 由于RESERVED_FDS默认值为32,所以我们添加了96,以确保配置不超过128个文件描述符*/
 #define CONFIG_FDSET_INCR (CONFIG_MIN_RESERVED_FDS+96)
 
 /* Hash table parameters */
 #define HASHTABLE_MIN_FILL        10      /* 最小哈希表填充10% */
 
-/* Command flags. Please check the command table defined in the redis.c file
+/* 命令标志. Please check the command table defined in the redis.c file
  * for more information about the meaning of every flag. */
 #define CMD_WRITE (1<<0)            /* "w" flag */
 #define CMD_READONLY (1<<1)         /* "r" flag */
@@ -320,7 +324,7 @@ typedef long long mstime_t; /* millisecond time type. */
 /* Synchronous read timeout - slave side */
 #define CONFIG_REPL_SYNCIO_TIMEOUT 5
 
-/* List related stuff */
+/* 列表相关的东西*/
 #define LIST_HEAD 0
 #define LIST_TAIL 1
 #define ZSET_MIN 0
@@ -632,18 +636,18 @@ typedef struct clientReplyBlock {
     char buf[];
 } clientReplyBlock;
 
-/* Redis database representation. There are multiple databases identified
+/* Redis数据库表示. There are multiple databases identified
  * by integers from 0 (the default database) up to the max configured
- * database. The database number is the 'id' field in the structure. */
+ * database.在结构体中'id'字段表示数据库序号. */
 typedef struct redisDb {
-    dict *dict;                 /* The keyspace for this DB */
+    dict *dict;                 /* 这个DB的key空间 */
     dict *expires;              /* Timeout of keys with a timeout set */
     dict *blocking_keys;        /* Keys with clients waiting for data (BLPOP)*/
     dict *ready_keys;           /* Blocked keys that received a PUSH */
     dict *watched_keys;         /* WATCHED keys for MULTI/EXEC CAS */
-    int id;                     /* Database ID */
-    long long avg_ttl;          /* Average TTL, just for stats */
-    list *defrag_later;         /* List of key names to attempt to defrag one by one, gradually. */
+    int id;                     /* 数据库id*/
+    long long avg_ttl;          /* 平均TTL,仅用于统计*/
+    list *defrag_later;         /*逐渐尝试逐个碎片整理的key名列表. */
 } redisDb;
 
 /* Client MULTI/EXEC state */
@@ -713,7 +717,7 @@ typedef struct readyList {
  * 客户端被存放在一个链表中. */
 typedef struct client {
     uint64_t id;            /* Client incremental unique ID. */
-    int fd;                 /* Client socket. */
+    int fd;                 /* 客户端scoketClient socket. */
     redisDb *db;            /* Pointer to currently SELECTed DB. */
     robj *name;             /* As set by CLIENT SETNAME. */
     sds querybuf;           /* Buffer we use to accumulate client queries. */
@@ -1188,7 +1192,7 @@ struct redisServer {
     list *clients_waiting_acks;         /* Clients waiting in WAIT command. */
     int get_ack_from_slaves;            /* If true we send REPLCONF GETACK. */
     /* Limits */
-    unsigned int maxclients;            /* Max number of simultaneous clients */
+    unsigned int maxclients;            /* 最大并发客户端数 */
     unsigned long long maxmemory;   /* 要使用的最大内存字节数 */
     int maxmemory_policy;           /* key驱逐策略Policy for key eviction */
     int maxmemory_samples;          /* Pricision of random sampling */
@@ -1299,9 +1303,9 @@ struct redisCommand {
     redisCommandProc *proc;
     int arity;
     char *sflags; /* 标志为字符串表示，每个标志一个字符. */
-    int flags;    /* The actual flags, obtained from the 'sflags' field. */
-    /* Use a function to determine keys arguments in a command line.
-     * Used for Redis Cluster redirect. */
+    int flags;    /* 实际flags,从'sflags'字段获取值. */
+    /* 使用函数确定命令行中的key参数.
+     *用于Redis群集重定向. */
     redisGetKeysProc *getkeys_proc;
     /* What keys should be loaded in background when calling this command? */
     int firstkey; /* The first argument that's a key (0 = no keys) */

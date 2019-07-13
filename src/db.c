@@ -1,30 +1,7 @@
 /*
- * Copyright (c) 2009-2012, Salvatore Sanfilippo <antirez at gmail dot com>
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *   * Redistributions of source code must retain the above copyright notice,
- *     this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
- *   * Neither the name of Redis nor the names of its contributors may be used
- *     to endorse or promote products derived from this software without
- *     specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
+ * 2019年7月13日14:41:12
+ * 在内存层面,redis的db是以什么形式存在的呢? 一个链表?一个dict?还是其他的数据结构呢?
+ * typedef struct redisDb 在server.h中定义的redisDB结构体,才是数据库的体现
  */
 
 #include "server.h"
@@ -40,9 +17,11 @@
 
 int keyIsExpired(redisDb *db, robj *key);
 
-/* Update LFU when an object is accessed.
- * Firstly, decrement the counter if the decrement time is reached.
- * Then logarithmically increment the counter, and update the access time. */
+/* 当一个对象被访问后,修改LFU.
+ * 首先,如果达到减量时间,则递减计数器.
+ * 然后以对数方式递增计数器,并更新访问时间.
+ *
+ */
 void updateLFU(robj *val) {
     unsigned long counter = LFUDecrAndReturn(val);
     counter = LFULogIncr(counter);
@@ -205,14 +184,13 @@ void dbOverwrite(redisDb *db, robj *key, robj *val) {
     dictFreeVal(db->dict, &auxentry);
 }
 
-/* High level Set operation. This function can be used in order to set
- * a key, whatever it was existing or not, to a new object.
+/* 高层的set操作. 此函数可用于将key(无论是否存在)设置为新对象.
  *
  * 1) The ref count of the value object is incremented.
  * 2) clients WATCHing for the destination key notified.
  * 3) The expire time of the key is reset (the key is made persistent).
  *
- * All the new keys in the database should be created via this interface. */
+ * 应通过此接口创建数据库中的所有新key. */
 void setKey(redisDb *db, robj *key, robj *val) {
     if (lookupKeyWrite(db,key) == NULL) {
         dbAdd(db,key,val);
@@ -228,10 +206,10 @@ int dbExists(redisDb *db, robj *key) {
     return dictFind(db->dict,key->ptr) != NULL;
 }
 
-/* Return a random key, in form of a Redis object.
- * If there are no keys, NULL is returned.
+/* 从一个Redis对象中,返回一个随机key.
+ * 如果没有key存在,则返回NULL.
  *
- * The function makes sure to return keys not already expired. */
+ * 该功能确保返回尚未过期的key. */
 robj *dbRandomKey(redisDb *db) {
     dictEntry *de;
     int maxtries = 100;

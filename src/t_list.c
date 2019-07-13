@@ -339,6 +339,9 @@ void lindexCommand(client *c) {
 }
 
 void lsetCommand(client *c) {
+
+
+
     robj *o = lookupKeyWriteOrReply(c,c->argv[1],shared.nokeyerr);
     if (o == NULL || checkType(c,o,OBJ_LIST)) return;
     long index;
