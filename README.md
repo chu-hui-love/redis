@@ -184,6 +184,9 @@ replication.c
 
 在上面的例子中,`2`是命令所采用的参数个数,而`rtF`是命令标志,如`server.c`中命令表顶部注释中所述.
 
+`server.c`中`struct redisCommand redisCommandTable[]`定义着所有redis提供的命令
+
+
 命令以某种方式运行后,它会向客户端返回一个回复,通常使用`addReply()`或`networking.c`中定义的类似函数.
 
 在Redis源代码中有大量的命令实现,可以作为实际命令实现的示例.编写一些玩具命令可以很好地熟悉代码库.

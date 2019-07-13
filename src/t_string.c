@@ -61,10 +61,10 @@ static int checkStringLength(client *c, long long size) {
  * If abort_reply is NULL, "$-1" is used. */
 
 #define OBJ_SET_NO_FLAGS 0
-#define OBJ_SET_NX (1<<0)     /* Set if key not exists. */
-#define OBJ_SET_XX (1<<1)     /* Set if key exists. */
-#define OBJ_SET_EX (1<<2)     /* Set if time in seconds is given */
-#define OBJ_SET_PX (1<<3)     /* Set if time in ms in given */
+#define OBJ_SET_NX (1<<0)     /* 如果key不存在Set if key not exists. */
+#define OBJ_SET_XX (1<<1)     /* 如果key存在Set if key exists. */
+#define OBJ_SET_EX (1<<2)     /* 如果时间给定的是秒 Set if time in seconds is given */
+#define OBJ_SET_PX (1<<3)     /* 如果时间给定的毫秒Set if time in ms in given */
 
 void setGenericCommand(client *c, int flags, robj *key, robj *val, robj *expire, int unit, robj *ok_reply, robj *abort_reply) {
     long long milliseconds = 0; /* initialized to avoid any harmness warning */
