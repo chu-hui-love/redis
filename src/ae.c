@@ -48,7 +48,7 @@
 /* 包括此系统支持的最佳多路复用层.
  * 下面应该按性能降序排列. */
 #ifdef HAVE_EVPORT
-#include "ae_evport.c"
+#include "ae_evport.c"  /*在sun的机器上,使用ae_evport.c*/
 #else
     #ifdef HAVE_EPOLL
     #include "ae_epoll.c"
