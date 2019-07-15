@@ -23,7 +23,7 @@ static int aeApiCreate(aeEventLoop *eventLoop) {
         zfree(state);
         return -1;
     }
-    state->epfd = epoll_create(1024); /* 1024只是内核的一个提示 */
+    state->epfd = epoll_create(1024); /* epoll_create 创建1024个文件描述符 */
     if (state->epfd == -1) {
         zfree(state->events);
         zfree(state);
