@@ -774,16 +774,14 @@ void sdstoupper(sds s) {
 }
 
 /* Compare two sds strings s1 and s2 with memcmp().
- *
+ * 用memcmp()比较两个sds字符串 s1和s2
  * Return value:
  *
  *     positive if s1 > s2.
  *     negative if s1 < s2.
- *     0 if s1 and s2 are exactly the same binary string.
+ *     0 如果s1和s2是完全相同的二进制字符串.
  *
- * If two strings share exactly the same prefix, but one of the two has
- * additional characters, the longer string is considered to be greater than
- * the smaller one. */
+ * 如果两个字符串共享完全相同的前缀,但其中一个有额外的字符,则认为较长的字符串大于较小的字符串.*/
 int sdscmp(const sds s1, const sds s2) {
     size_t l1, l2, minlen;
     int cmp;
