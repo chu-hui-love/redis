@@ -1,32 +1,4 @@
-/*
- * Copyright (c) 2009-2012, Salvatore Sanfilippo <antirez at gmail dot com>
- * Copyright (c) 2009-2012, Pieter Noordhuis <pcnoordhuis at gmail dot com>
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *   * Redistributions of source code must retain the above copyright notice,
- *     this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
- *   * Neither the name of Redis nor the names of its contributors may be used
- *     to endorse or promote products derived from this software without
- *     specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
+/* */
 
 /*-----------------------------------------------------------------------------
  * Sorted set API
@@ -75,7 +47,7 @@ int zslLexValueLteMax(sds value, zlexrangespec *spec);
 
 /* 
  * 创建具有指定数量级别的skiplist节点.
- * 调用后,节点引用SDS字符串"ele". 
+ * 调用后,节点引用SDS字符串"ele"(即,每个节点存储的数据为sds类型). 
  */
 zskiplistNode *zslCreateNode(int level, double score, sds ele) {
     zskiplistNode *zn =
@@ -157,10 +129,10 @@ zskiplistNode *zslInsert(zskiplist *zsl, double score, sds ele) {
         }
         update[i] = x;
     }
-    /* we assume the element is not already inside, since we allow duplicated
-     * scores, reinserting the same element should never happen since the
-     * caller of zslInsert() should test in the hash table if the element is
-     * already inside or not. */
+    /* 我们假设元素不在内部,因为我们允许重复score,
+     * 重新插入相同的元素应该永远不会发生,
+     * 因为zslInsert()的调用者应该在哈希表中测试元素是否已经在内部.
+     */
     level = zslRandomLevel();
     if (level > zsl->level) {
         for (i = zsl->level; i < level; i++) {
