@@ -372,6 +372,7 @@ typedef long long mstime_t; /* millisecond time type. */
 #define MAXMEMORY_ALLKEYS_RANDOM ((6<<8)|MAXMEMORY_FLAG_ALLKEYS)
 #define MAXMEMORY_NO_EVICTION (7<<8)
 
+/*默认最大内存策略是NO_EVICTION*/
 #define CONFIG_DEFAULT_MAXMEMORY_POLICY MAXMEMORY_NO_EVICTION
 
 /* Scripting */

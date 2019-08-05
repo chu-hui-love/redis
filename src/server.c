@@ -1607,7 +1607,7 @@ void initServerConfig(void) {
     memset(server.blocked_clients_by_type,0,
            sizeof(server.blocked_clients_by_type));
     server.maxmemory = CONFIG_DEFAULT_MAXMEMORY;  /*配置默认使用最大字节数 默认值为0,表示无限制*/
-    server.maxmemory_policy = CONFIG_DEFAULT_MAXMEMORY_POLICY;
+    server.maxmemory_policy = CONFIG_DEFAULT_MAXMEMORY_POLICY; /*配置默认最大内存策略:noeviction*/
     server.maxmemory_samples = CONFIG_DEFAULT_MAXMEMORY_SAMPLES;
     server.lfu_log_factor = CONFIG_DEFAULT_LFU_LOG_FACTOR;
     server.lfu_decay_time = CONFIG_DEFAULT_LFU_DECAY_TIME;
