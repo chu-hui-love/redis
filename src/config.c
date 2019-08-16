@@ -1,4 +1,4 @@
-/* 配置文件解析和配置GET/SET命令实现.
+/* 脜盲脰脙脦脛录镁陆芒脦枚潞脥脜盲脰脙GET/SET脙眉脕卯脢碌脧脰.
  *
  * Copyright (c) 2009-2012, Salvatore Sanfilippo <antirez at gmail dot com>
  * All rights reserved.
@@ -185,7 +185,7 @@ void loadServerConfigFromString(char *config) {
         linenum = i+1;
         lines[i] = sdstrim(lines[i]," \t\r\n");
 
-        /* Skip comments and blank lines */
+        /* 脤酶鹿媒脳垄脢脥潞脥驴脮掳脳脨脨 */
         if (lines[i][0] == '#' || lines[i][0] == '\0') continue;
 
         /* Split into arguments */
@@ -202,7 +202,7 @@ void loadServerConfigFromString(char *config) {
         }
         sdstolower(argv[0]);
 
-        /* Execute config directives */
+        /* 脰麓脨脨脜盲脰脙脰赂脕卯 */
         if (!strcasecmp(argv[0],"timeout") && argc == 2) {
             server.maxidletime = atoi(argv[1]);
             if (server.maxidletime < 0) {
@@ -228,13 +228,16 @@ void loadServerConfigFromString(char *config) {
                 err = "Invalid backlog value"; goto loaderr;
             }
         } else if (!strcasecmp(argv[0],"bind") && argc >= 2) {
+         	/*读取bind的配置属性*/
             int j, addresses = argc-1;
-
+			/*redis绑定的地址数量,最大不能超过16个*/
             if (addresses > CONFIG_BINDADDR_MAX) {
                 err = "Too many bind addresses specified"; goto loaderr;
             }
             for (j = 0; j < addresses; j++)
                 server.bindaddr[j] = zstrdup(argv[j+1]);
+			
+            /*设置服务器绑定的ip地址数量*/
             server.bindaddr_count = addresses;
         } else if (!strcasecmp(argv[0],"unixsocket") && argc == 2) {
             server.unixsocket = zstrdup(argv[1]);
@@ -806,6 +809,11 @@ void loadServerConfigFromString(char *config) {
         sdsfreesplitres(argv,argc);
     }
 
+
+
+
+
+
     /* Sanity checks. */
     if (server.cluster_enabled && server.masterhost) {
         linenum = slaveof_linenum;
@@ -825,17 +833,17 @@ loaderr:
     exit(1);
 }
 
-/* 从指定的文件名中加载服务配置.
- *函数在加载之前将存储在"options"字符串中的附加配置指令附加到配置文件中.
+/* 麓脫脰赂露篓碌脛脦脛录镁脙没脰脨录脫脭脴路镁脦帽脜盲脰脙.
+ *潞炉脢媒脭脷录脫脭脴脰庐脟掳陆芦麓忙麓垄脭脷"options"脳脰路没麓庐脰脨碌脛赂陆录脫脜盲脰脙脰赂脕卯赂陆录脫碌陆脜盲脰脙脦脛录镁脰脨.
  *
- * 文件名和选项都可以为NULL,在这种情况下被视为空. 
- * 这样loadServerConfig可用于加载文件或只加载字符串. 
+ * 脦脛录镁脙没潞脥脩隆脧卯露录驴脡脪脭脦陋NULL,脭脷脮芒脰脰脟茅驴枚脧脗卤禄脢脫脦陋驴脮. 
+ * 脮芒脩霉loadServerConfig驴脡脫脙脫脷录脫脭脴脦脛录镁禄貌脰禄录脫脭脴脳脰路没麓庐. 
  */
 void loadServerConfig(char *filename, char *options) {
     sds config = sdsempty();
     char buf[CONFIG_MAX_LINE+1];
 
-    /* 加载文件内容 */
+    /* 录脫脭脴脦脛录镁脛脷脠脻 */
     if (filename) {
         FILE *fp;
 
@@ -852,7 +860,7 @@ void loadServerConfig(char *filename, char *options) {
             config = sdscat(config,buf);
         if (fp != stdin) fclose(fp);
     }
-    /* 追加额外的选项 */
+    /* 脳路录脫露卯脥芒碌脛脩隆脧卯 */
     if (options) {
         config = sdscat(config,"\n");
         config = sdscat(config,options);

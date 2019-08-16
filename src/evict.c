@@ -1,4 +1,4 @@
-/* Maxmemory directive handling (LRU eviction and other policies).
+/* Maxmemory指令处理(LRU驱逐和其他策略).
  *
  * ----------------------------------------------------------------------------
  *
@@ -115,7 +115,7 @@ unsigned long long estimateObjectIdleTime(robj *o) {
  *
  * ------------------------------------------------------------------------
  *
- * LRU approximation algorithm
+ * LRU近似算法
  *
  * Redis uses an approximation of the LRU algorithm that runs in constant
  * memory. Every time there is a key to expire, we sample N keys (with

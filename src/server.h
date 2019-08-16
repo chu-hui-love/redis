@@ -60,7 +60,7 @@ typedef long long mstime_t; /* millisecond time type. */
 #define CONFIG_DEFAULT_SERVER_PORT        6379  /* TCP 端口. */
 #define CONFIG_DEFAULT_TCP_BACKLOG       511    /* TCP listen backlog. */
 #define CONFIG_DEFAULT_CLIENT_TIMEOUT       0   /* 默认客户端超时:无穷大 */
-#define CONFIG_DEFAULT_DBNUM     16
+#define CONFIG_DEFAULT_DBNUM     16             /*Redis默认数据库数量*/
 #define CONFIG_MAX_LINE    1024
 #define CRON_DBS_PER_CALL 16
 #define NET_MAX_WRITES_PER_EVENT (1024*64)
@@ -910,8 +910,8 @@ struct clusterState;
 struct redisServer {
     /* General */
     pid_t pid;                  /* 主进程pid. */
-    char *configfile;           /* 绝对配置文件路径,可能为NULL */
-    char *executable;           /* 绝对可执行文件路径. */
+    char *configfile;           /* 配置文件绝对路径,可能为NULL */
+    char *executable;           /* 可执行文件绝对路径. */
     char **exec_argv;           /* Executable argv vector (copy). */
     int dynamic_hz;             /* Change hz value depending on # of clients. */
     int config_hz;              /* Configured HZ value. May be different than
@@ -947,7 +947,7 @@ struct redisServer {
     int tcp_backlog;            /* TCP listen() backlog */
     char *bindaddr[CONFIG_BINDADDR_MAX]; /* 我们应该绑定到的地址 */
     int bindaddr_count;         /* Number of addresses in server.bindaddr[] */
-    char *unixsocket;           /* UNIX socket path */
+    char *unixsocket;           /* UNIX socket path 不知道啥意思...配置默认配置和配置文件上都是null*/
     mode_t unixsocketperm;      /* UNIX socket permission */
     int ipfd[CONFIG_BINDADDR_MAX]; /*TCP socket文件描述符 */
     int ipfd_count;             /* Used slots in ipfd[] */
@@ -1030,10 +1030,10 @@ struct redisServer {
     int active_defrag_cycle_max;       /* maximal effort for defrag in CPU percentage */
     unsigned long active_defrag_max_scan_fields; /* maximum number of fields of set/hash/zset/list to process from within the main dict scan */
     size_t client_max_querybuf_len; /* Limit for client query buffer length */
-    int dbnum;                      /* Total number of configured DBs */
+    int dbnum;                      /* 已配置的DB的总数量        */
     int supervised;                 /* 1 if supervised, 0 otherwise. */
     int supervised_mode;            /* See SUPERVISED_* */
-    int daemonize;                  /* True if running as a daemon */
+    int daemonize;                  /* 如果作为守护进程运行则为True */
     clientBufferLimitsConfig client_obuf_limits[CLIENT_TYPE_OBUF_COUNT];
     /* AOF persistence */
     int aof_state;                  /* AOF_(ON|OFF|WAIT_REWRITE) */
