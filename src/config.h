@@ -49,7 +49,9 @@
 #endif
 
 /* Test for polling API */
+
 #ifdef __linux__
+
 #define HAVE_EPOLL 1
 #endif
 
@@ -105,7 +107,7 @@ void spt_init(int argc, char *argv[]);
 void setproctitle(const char *fmt, ...);
 #endif
 
-/* Byte ordering detection */
+/* ×Ö½ÚÅÅÐò¼ì²â */
 #include <sys/types.h> /* This will likely define BYTE_ORDER */
 
 #ifndef BYTE_ORDER

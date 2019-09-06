@@ -74,6 +74,8 @@ int listMatchObjects(void *a, void *b) {
 /* This function links the client to the global linked list of clients.
  * unlinkClient() does the opposite, among other things. */
 void linkClient(client *c) {
+	serverLog(LL_WARNING,"networking.c 77 linkClient called ");
+
     listAddNodeTail(server.clients,c);
     /* Note that we remember the linked list node where the client is stored,
      * this way removing the client in unlinkClient() will not require
@@ -85,10 +87,7 @@ void linkClient(client *c) {
 
 client *createClient(int fd) {
     client *c = zmalloc(sizeof(client));
-
-
 	serverLog(LL_WARNING,"networking.c 90 createClient called fd=%d",fd);
-
 
     /* 传递-1作为fd可以创建一个非连接的客户端 passing -1 as fd it is possible to create a non connected client.
      * 这很有用,因为所有命令都需要在客户端的上下文中执行.
@@ -665,6 +664,8 @@ int clientHasPendingReplies(client *c) {
 
 #define MAX_ACCEPTS_PER_CALL 1000
 static void acceptCommonHandler(int fd, int flags, char *ip) {
+	serverLog(LL_WARNING,"networking.c 667 acceptCommonHandler called fd=%d,flags=%d,ip=%s",fd,flags,ip);
+
     client *c;
     if ((c = createClient(fd)) == NULL) {
         serverLog(LL_WARNING,
@@ -977,9 +978,10 @@ client *lookupClientByID(uint64_t id) {
     return (c == raxNotFound) ? NULL : c;
 }
 
-/* Write data in output buffers to client. Return C_OK if the client
- * is still valid after the call, C_ERR if it was freed. */
-int writeToClient(int fd, client *c, int handler_installed) {
+/* 将输出缓冲区中的数据写入客户端.如果客户端在调用后仍然有效,则返回C_OK,
+ * 如果已释放,则返回C_ERR.*/
+int writeToClient(int fd, client *c, int handler_installed) {	
+	serverLog(LL_WARNING,"networking.c 982 writeToClient called fd=%d,handler_installed=%d",fd,handler_installed);
     ssize_t nwritten = 0, totwritten = 0;
     size_t objlen;
     clientReplyBlock *o;
@@ -1523,8 +1525,11 @@ void processInputBufferAndReplicate(client *c) {
  * 从客户端中将数据读出来
  */
 void readQueryFromClient(aeEventLoop *el, int fd, void *privdata, int mask) {
+
 	// 数据强制转换
     client *c = (client*) privdata;
+	
+	serverLog(LL_WARNING,"networking.c 1530 readQueryFromClient called fd=%d,mask=%d,querybuf=%s",fd,mask,c->querybuf);
     int nread, readlen;
     size_t qblen;
     UNUSED(el);
@@ -1542,11 +1547,15 @@ void readQueryFromClient(aeEventLoop *el, int fd, void *privdata, int mask) {
         ssize_t remaining = (size_t)(c->bulklen+2)-sdslen(c->querybuf);
 
         /* Note that the 'remaining' variable may be zero in some edge case,
-         * for example once we resume a blocked client after CLIENT PAUSE. */
+         * for example once we resume a blocked client after CLIENT PAUSE.
+		 * 请注意,在某些边缘情况下,'remaining'变量可能为零.
+		 * 例如,一旦我们在CLIENT PAUSE之后恢复被阻止的客户端.
+         */
         if (remaining > 0 && remaining < readlen) readlen = remaining;
     }
 
     qblen = sdslen(c->querybuf);
+  
     if (c->querybuf_peak < qblen) c->querybuf_peak = qblen;
     c->querybuf = sdsMakeRoomFor(c->querybuf, readlen);
     nread = read(fd, c->querybuf+qblen, readlen);
@@ -1587,7 +1596,7 @@ void readQueryFromClient(aeEventLoop *el, int fd, void *privdata, int mask) {
         return;
     }
 
-    /* Time to process the buffer. If the client is a master we need to
+    /* 处理缓冲区. If the client is a master we need to
      * compute the difference between the applied offset before and after
      * processing the buffer, to understand how much of the replication stream
      * was actually applied to the master state: this quantity, and its

@@ -408,8 +408,7 @@ int aeProcessEvents(aeEventLoop *eventLoop, int flags)
             }
         }
 
-        /* Call the multiplexing API, will return only on timeout or when
-         * some event fires. */
+        /* 调用多路复用API,只会在超时或某些事件触发时返回. */
         numevents = aeApiPoll(eventLoop, tvp);
 
         /* After sleep callback. */

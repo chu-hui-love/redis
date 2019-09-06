@@ -434,13 +434,18 @@ robj *tryObjectEncoding(robj *o) {
     size_t len;
 
     /* 确保这是一个字符串对象,这是我们在此函数中编码的唯一类型.
+     * 其他类型使用编码的内存高效表示,但由实现该类型的命令来处理.
      * Make sure this is a string object, the only type we encode
      * in this function. Other types use encoded memory efficient
      * representations but are handled by the commands implementing
      * the type. */
     serverAssertWithInfo(NULL,o,o->type == OBJ_STRING);
 
-    /* We try some specialized encoding only for objects that are
+    /* 
+     * 我们只对原始或EMBSTR编码的对象进行了一些特殊的编码,
+     * 换句话说,仍然由实际的字符数组表示的对象.
+     *
+     * We try some specialized encoding only for objects that are
      * RAW or EMBSTR encoded, in other words objects that are still
      * in represented by an actually array of chars. */
     if (!sdsEncodedObject(o)) return o;

@@ -59,6 +59,10 @@ static void anetSetError(char *err, const char *fmt, ...)
 }
 
 int anetSetBlock(char *err, int fd, int non_block) {
+
+	//serverLog(LL_WARNING,"anet.c anetSetBlock called,err=%s,fd=%d,non_block=%d",err,fd,non_block);
+
+
     int flags;
 
     /* Set the socket blocking (if non_block is zero) or non-blocking.
@@ -142,6 +146,8 @@ int anetKeepAlive(char *err, int fd, int interval)
 
 static int anetSetTcpNoDelay(char *err, int fd, int val)
 {
+	//serverLog(LL_WARNING,"anet.c anetSetTcpNoDelay called err=%s,fd=%d,val=%d",err,fd,val);
+
     if (setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &val, sizeof(val)) == -1)
     {
         anetSetError(err, "setsockopt TCP_NODELAY: %s", strerror(errno));
