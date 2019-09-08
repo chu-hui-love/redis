@@ -45,6 +45,8 @@
 #include "config.h"
 
 
+
+
 /* 包括此系统支持的最佳多路复用层.
  * 下面应该按性能降序排列. */
 #ifdef HAVE_EVPORT
@@ -138,6 +140,7 @@ void aeStop(aeEventLoop *eventLoop) {
 int aeCreateFileEvent(aeEventLoop *eventLoop, int fd, int mask,
         aeFileProc *proc, void *clientData)
 {
+
     if (fd >= eventLoop->setsize) {
         errno = ERANGE;
         return AE_ERR;
