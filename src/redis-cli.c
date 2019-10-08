@@ -2621,7 +2621,7 @@ static sds clusterManagerNodeSlotsString(clusterManagerNode *node) {
 
 /* We have 16384 hash slots. The hash slot of a given key is obtained
  * as the least significant 14 bits of the crc16 of the key.
- *
+ * 我们有16384个hash槽.
  * However if the key contains the {...} pattern, only the part between
  * { and } is hashed. This may be useful in the future to force certain
  * keys to be in the same node (assuming no resharding is in progress). */
