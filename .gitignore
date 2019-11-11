@@ -29,3 +29,4 @@ deps/lua/src/liblua.a
 *.dSYM
 Makefile.dep
 redis.si4project/*
+redis5.si4project/*
